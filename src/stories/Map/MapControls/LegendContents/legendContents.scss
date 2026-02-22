@@ -1,0 +1,114 @@
+@use "../../../../NOAA-theme.scss" as *;
+
+// Legend Table Styles
+.legend-table {
+  width: 100%;
+
+  &__table {
+    width: 100%;
+    border-collapse: collapse;
+    font-size: 14px;
+  }
+
+  &__header {
+    text-align: left;
+    padding: $Spacing-Extra-small-gap 0;
+    padding-bottom: $Spacing-small-gap;
+    font-weight: 600;
+    color: $theme-color-base-dark;
+    border-bottom: $Stroke-Width-Primary-Stroke-Width solid
+      $theme-color-base-lighter;
+    font-family: "Public Sans Web", -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+
+    &--right {
+      text-align: right;
+    }
+  }
+
+  &__row {
+    &:not(:last-child) {
+      .legend-table__cell {
+        border-bottom: $Stroke-Width-Primary-Stroke-Width solid
+          $theme-color-base-lightest;
+      }
+    }
+  }
+
+  &__cell {
+    padding: $Spacing-small-gap 0;
+
+    &--right {
+      text-align: right;
+      color: $theme-color-base-dark;
+    }
+  }
+
+  &__item {
+    display: flex;
+    align-items: center;
+    gap: $Spacing-small-gap;
+  }
+
+  &__color-box {
+    display: inline-block;
+    width: 16px;
+    height: 16px;
+    border-radius: $Spacing-Extra-small-gap / 2;
+    flex-shrink: 0;
+  }
+
+  &__name {
+    color: $theme-color-base-darkest;
+    font-family: "Public Sans Web", -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+}
+
+// Legend Gradient Styles
+.legend-gradient {
+  width: 100%;
+  padding: $Spacing-small-gap 0;
+
+  &__svg {
+    display: block;
+  }
+
+  &__labels {
+    position: relative;
+    display: flex;
+    justify-content: space-between;
+    width: 100%;
+    height: 30px;
+    margin-top: $Spacing-Extra-small-gap;
+  }
+
+  &__label {
+    // position: absolute;
+    // transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    &:first-child {
+      align-items: flex-start;
+    }
+    &:last-child {
+      align-items: flex-end;
+    }
+  }
+
+  &__tick {
+    width: $Stroke-Width-Primary-Stroke-Width;
+    height: 6px;
+    background-color: $theme-color-base-dark;
+    margin-bottom: $Spacing-Extra-small-gap;
+  }
+
+  &__value {
+    font-size: 12px;
+    color: $theme-color-base-dark;
+    white-space: nowrap;
+    font-family: "Public Sans Web", -apple-system, BlinkMacSystemFont,
+      "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  }
+}

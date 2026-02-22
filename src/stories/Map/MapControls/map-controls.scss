@@ -1,0 +1,207 @@
+@use '../../../NOAA-theme.scss' as *;
+
+.map-controls {
+  position: absolute;
+  right: $Spacing-large-gap;
+  bottom: 38px;
+
+  display: flex;
+  flex-direction: column;
+  gap: $Spacing-medium-gap;
+  z-index: 2;
+  pointer-events: none;
+
+  // Enable pointer events for child elements
+  * {
+    pointer-events: auto;
+  }
+
+  &--disabled {
+    opacity: 0.5;
+    pointer-events: none;
+
+    .map-controls__button {
+      cursor: not-allowed;
+    }
+  }
+
+  &__section {
+    display: flex;
+    flex-direction: column;
+    gap: $Spacing-Extra-small-gap;
+    background: $Colors-White;
+    border-radius: $Radius-Rounded-Corner-Md;
+    padding: $Spacing-Extra-small-gap;
+    box-shadow: 0 2px 8px rgba(28, 29, 31, 0.15);
+    border: $Stroke-Width-Primary-Stroke-Width solid $Colors-Gray-Light;
+
+    &--primary {
+      // Primary tool section styling
+    }
+
+    &--navigation {
+      // Navigation section styling  
+    }
+
+    &--utility {
+      // Utility section styling
+    }
+  }
+
+  &__button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 34px;
+    height: 34px;
+    border: none;
+    border-radius: $Radius-Rounded-Corner;
+    background: transparent;
+    color: $Colors-Dark-Blue;
+    cursor: pointer;
+    transition: all 0.2s ease;
+    outline: none;
+    position: relative;
+
+    &:hover {
+      background: $Colors-Gray-Lightest;
+      color: $Colors-Dark-Blue;
+      transform: scale(1.05);
+    }
+
+    &:focus {
+      outline: 2px solid $Colors-Dark-Blue;
+      outline-offset: 2px;
+    }
+
+    &:active {
+      transform: scale(0.95);
+      background: $Colors-Gray-Lighter;
+    }
+
+    &--active {
+      background: $Colors-Dark-Blue;
+      color: $Colors-White;
+
+      &:hover {
+        background: $Colors-Dark-Blue;
+        color: $Colors-White;
+        transform: scale(1.05);
+      }
+
+      &:active {
+        background: $Colors-Darkest-Blue;
+        transform: scale(0.95);
+      }
+    }
+
+    &:disabled {
+      opacity: 0.5;
+      cursor: not-allowed;
+      transform: none;
+
+      &:hover,
+      &:focus,
+      &:active {
+        background: transparent;
+        color: $Colors-Dark-Blue;
+        transform: none;
+        outline: none;
+      }
+    }
+  }
+
+  &__icon {
+    width: 20px;
+    height: 20px;
+    flex-shrink: 0;
+  }
+
+  &__basemap-layer {
+    position: absolute;
+    right: calc(100% + $Spacing-small-gap);
+    top: 0;
+    z-index: 1001;
+    pointer-events: auto;
+  }
+
+  &__location-search {
+    position: absolute;
+    right: calc(100% + $Spacing-small-gap);
+    top: 36px;
+    z-index: 1001;
+    max-width:280px;
+    pointer-events: auto;
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .map-controls {
+    right: $Spacing-small-gap;
+    
+    &__section {
+      padding: 2px;
+      gap: 2px;
+    }
+
+    &__button {
+      width: 36px;
+      height: 36px;
+    }
+
+    &__icon {
+      width: 18px;
+      height: 18px;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .map-controls {
+    right: $Spacing-Extra-small-gap;
+    gap: $Spacing-small-gap;
+    
+    &__button {
+      width: 32px;
+      height: 32px;
+    }
+
+    &__icon {
+      width: 16px;
+      height: 16px;
+    }
+  }
+}
+
+// High contrast mode support
+@media (prefers-contrast: high) {
+  .map-controls {
+    &__section {
+      border-width: $Stroke-Width-Large-Stroke-Width;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.3);
+    }
+
+    &__button {
+      border: $Stroke-Width-Primary-Stroke-Width solid $Colors-Dark-Blue;
+
+      &--active {
+        border-color: $Colors-Dark-Blue;
+      }
+    }
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .map-controls {
+    &__button {
+      transition: none;
+
+      &:hover,
+      &:active {
+        transform: none;
+      }
+    }
+  }
+}

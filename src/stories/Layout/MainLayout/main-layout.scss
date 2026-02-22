@@ -1,0 +1,82 @@
+@use "../../../NOAA-theme.scss" as *;
+
+.main-layout {
+  display: flex;
+  height: 100%; // Use available height from app__content
+  width: 100%;
+  overflow: hidden;
+  position: relative;
+
+  &__management-controls {
+    display: flex;
+    flex-direction: column;
+    width: 60px; // Dedicated narrow width for management controls
+    background: $theme-color-base-lighter;
+    border-right: 1px solid $theme-color-base-light;
+    z-index: 10;
+    flex-shrink: 0; // Don't shrink this bar
+  }
+
+  &__chat-section {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    height: 100%; // Fill available height
+    z-index: 1;
+    transition: all 0.3s ease;
+    flex-shrink: 0; // Don't shrink chat section
+    flex: 1;
+    // When map is hidden, chat section should expand
+    &--map-hidden {
+      flex: 1;
+    }
+
+    // When in smaller state, chat section should be half width of remaining space
+    &--half-width {
+      flex: 1;
+    }
+  }
+
+  &__map-section {
+    flex: 1;
+    background: $theme-color-base-lightest;
+    position: relative;
+    overflow: hidden;
+    transition: all 0.3s ease;
+  }
+}
+
+// Responsive behavior
+@media (max-width: 768px) {
+  .main-layout {
+    flex-direction: column;
+
+    &__chat-section {
+      order: 2;
+      height: 40vh;
+    }
+
+    &__map-section {
+      order: 1;
+      height: 60vh;
+    }
+
+    &__management-controls {
+      top: auto;
+      bottom: 0;
+      left: 0;
+    }
+  }
+}
+
+@media (max-width: 480px) {
+  .main-layout {
+    &__chat-section {
+      height: 50vh;
+    }
+
+    &__map-section {
+      height: 50vh;
+    }
+  }
+}

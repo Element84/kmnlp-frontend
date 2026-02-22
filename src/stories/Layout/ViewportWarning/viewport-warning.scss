@@ -1,0 +1,79 @@
+@use "../../../NOAA-theme.scss" as *;
+
+.viewport-warning {
+  position: fixed;
+  top: 0;
+  left: 0;
+  width: 100vw;
+  height: 100vh;
+  background-color: $Colors-Gray-Lightest;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  z-index: 9999;
+
+  // Only show on screens smaller than desktop breakpoint (1024px)
+  display: none;
+
+  @media (max-width: 1024px) {
+    display: flex;
+  }
+
+  &__content {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    text-align: center;
+    padding: 2rem;
+    max-width: 500px;
+  }
+
+  &__logo {
+    margin-bottom: 2rem;
+
+    svg {
+      width: 200px;
+      height: 200px;
+      
+      @media (max-width: 480px) {
+        width: 150px;
+        height: 150px;
+      }
+    }
+  }
+
+  &__message {
+    display: flex;
+    flex-direction: column;
+    gap: 0.5rem;
+  }
+
+  &__text {
+    font-size: 18px;
+    line-height: 1.4;
+    color: $Colors-Gray-Dark;
+    margin: 0;
+    font-weight: 400;
+
+    @media (max-width: 480px) {
+      font-size: 16px;
+    }
+  }
+
+  &__subtext {
+    font-size: 18px;
+    line-height: 1.4;
+    color: $Colors-Gray-Dark;
+    margin: 0;
+    font-weight: 400;
+
+    @media (max-width: 480px) {
+      font-size: 16px;
+    }
+  }
+}
+
+// Utility class to force show the warning (for Storybook/testing)
+.viewport-warning--force-show {
+  display: flex !important;
+}

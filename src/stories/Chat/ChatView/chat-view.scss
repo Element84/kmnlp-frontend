@@ -1,0 +1,310 @@
+@use "../../../NOAA-theme.scss" as *;
+
+.chat-view {
+  position: relative;
+  display: flex;
+  flex-direction: column;
+  height: 100%; // Use available height, not viewport height
+  background: $theme-color-white;
+  border-right: 1px solid $theme-color-base-lighter;
+  align-items: center;
+  transition: justify-content 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94);
+  &--collapsed {
+    width: 24px;
+    position: absolute;
+    left: 59px;
+
+    .chat-view__collapsed-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      position: absolute;
+      top: 50%;
+      z-index: 999;
+    }
+  }
+
+  &--maximized {
+    width: 100% !important;
+
+    flex: 1;
+    border-right: none;
+  }
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: flex-end;
+    min-height: 50px;
+    position: absolute;
+    top: 50%;
+    right: 0;
+    left: 0;
+  }
+
+  &__collapse-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 32px;
+    background-color: $Colors-Dark-Blue;
+    color: white;
+    border: 0;
+    border-radius: 4px 0 0 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $Colors-Primary-Blue;
+    }
+
+    &-icon {
+      font-size: 14px;
+      color: $theme-color-base-dark;
+    }
+  }
+
+  &__toggle-button {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 8px 16px;
+    border: 1px solid $theme-color-primary;
+    background: $theme-color-white;
+    color: $theme-color-primary;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 14px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $theme-color-primary-lighter;
+    }
+  }
+
+  &__expand-button {
+    width: 24px;
+    height: 32px;
+    background-color: $Colors-Dark-Blue;
+    border-radius: 0 4px 4px 0;
+    border: none;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+    margin-bottom: 8px;
+
+    &:hover {
+      background: $Colors-Primary-Blue;
+    }
+
+    &-icon {
+      font-size: 14px;
+      color: $theme-color-primary;
+    }
+  }
+  &__content--empty {
+    max-height: 0px;
+  }
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 0;
+    display: flex;
+    flex-direction: column;
+    max-width: 918px;
+    width: 100%;
+  }
+
+  &__input-section {
+    padding: 16px;
+    background: $theme-color-white;
+    width: 100%;
+    box-sizing: border-box;
+    max-width: 918px;
+  }
+
+  &__input-form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  &__prompt-input {
+    width: 100%;
+    padding: 12px;
+    border: 1px solid $theme-color-base-light;
+    border-radius: 4px;
+    font-size: 14px;
+    resize: none;
+    box-sizing: border-box;
+
+    &:focus {
+      outline: 2px solid $theme-color-primary;
+      outline-offset: 2px;
+      border-color: $theme-color-primary;
+    }
+
+    &::placeholder {
+      color: $theme-color-base-dark;
+    }
+  }
+
+  &__button-group {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  &__select-aoi {
+    flex: 1;
+    padding: 10px 16px;
+    border: 2px solid $theme-color-primary;
+    background: $theme-color-white;
+    color: $theme-color-primary;
+    border-radius: 4px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $theme-color-primary-lighter;
+    }
+  }
+
+  &__submit {
+    width: 40px;
+    height: 40px;
+    border: none;
+    background: $theme-color-primary;
+    color: $theme-color-white;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: $theme-color-primary-dark;
+    }
+
+    &:disabled {
+      background: $theme-color-base-light;
+      cursor: not-allowed;
+    }
+
+    &-icon {
+      font-size: 16px;
+      font-weight: bold;
+    }
+  }
+
+  // Collapsed state styles
+  &__collapsed-input {
+    padding: 8px 4px;
+    border-top: 1px solid $theme-color-base-lighter;
+    background: $theme-color-white;
+  }
+
+  &__collapsed-form {
+    display: flex;
+    flex-direction: column;
+    gap: 8px;
+  }
+
+  &__collapsed-prompt-input {
+    width: 100%;
+    padding: 6px 8px;
+    border: 1px solid $theme-color-base-light;
+    border-radius: 4px;
+    font-size: 12px;
+
+    &:focus {
+      outline: 2px solid $theme-color-primary;
+      outline-offset: 1px;
+      border-color: $theme-color-primary;
+    }
+  }
+
+  &__collapsed-button-group {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__select-aoi-collapsed {
+    width: 100%;
+    padding: 6px 4px;
+    border: 1px solid $theme-color-primary;
+    background: $theme-color-white;
+    color: $theme-color-primary;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 10px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $theme-color-primary-lighter;
+    }
+  }
+
+  &__submit-collapsed {
+    width: 100%;
+    height: 32px;
+    border: none;
+    background: $theme-color-primary;
+    color: $theme-color-white;
+    border-radius: 4px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background: $theme-color-primary-dark;
+    }
+
+    &:disabled {
+      background: $theme-color-base-light;
+      cursor: not-allowed;
+    }
+
+    .chat-view__submit-icon {
+      font-size: 14px;
+    }
+  }
+}
+
+// Responsive behavior
+@media (max-width: 768px) {
+  .chat-view {
+    &--collapsed {
+      width: 40px !important;
+      min-width: 40px;
+    }
+
+    &__input-section {
+      padding: 12px;
+    }
+
+    &__button-group {
+      flex-direction: column;
+      gap: 8px;
+    }
+
+    &__select-aoi {
+      flex: none;
+      width: 100%;
+    }
+  }
+}

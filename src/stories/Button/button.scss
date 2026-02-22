@@ -1,0 +1,14 @@
+@use "../../NOAA-theme.scss" as *;
+//TO DO:overrider button styles without !important
+.noaa-button {
+  background-color: $Colors-blue-button !important;
+  color: $Colors-Dark-Blue !important;
+  font-weight: 400 !important;
+  padding: $Spacing-small-gap $Spacing-medium-gap !important;
+  &__outlined {
+    background-color: transparent !important;
+    color: $Colors-Dark-Blue !important;
+    font-weight: 400 !important;
+    border: 2px solid $Colors-Dark-Blue !important;
+  }
+}

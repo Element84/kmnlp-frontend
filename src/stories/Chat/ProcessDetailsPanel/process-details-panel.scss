@@ -1,0 +1,45 @@
+@use "../../../NOAA-theme.scss" as *;
+@keyframes fadeIn {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
+  }
+}
+
+@keyframes slideDown {
+  from {
+    max-height: 0;
+    opacity: 0;
+  }
+  to {
+    max-height: 1000px;
+    opacity: 1;
+  }
+}
+.details-panel__header {
+  max-height: 85px;
+}
+// Custom class for closed state (only needed for the transform)
+.process-details-panel--closed {
+  transform: translateX(100%);
+}
+
+.step-container:last-child {
+  flex: 1;
+}
+
+.status-text {
+  &--failure {
+    color: $theme-color-error;
+  }
+
+  &--success {
+    color: $theme-color-success;
+  }
+
+  &--pending {
+    color: $theme-color-base-light;
+  }
+}

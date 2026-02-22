@@ -1,0 +1,69 @@
+/**
+ * BasemapLayer Component Styles
+ * Clean minimal styles to match the original screenshot design
+ */
+
+.basemap-layer {
+  position: absolute;
+  z-index: 1000;
+
+  // Container enhancements that can't be achieved with USWDS utilities
+  &__container {
+    animation: basemapFadeIn 0.15s ease-out;
+    box-shadow: 0 2px 8px rgba(0, 0, 0, 0.12) !important;
+    min-width: 120px;
+    border-radius: 8px !important; // Enhanced rounded corners
+    overflow: hidden; // Ensures button corners don't extend beyond container
+  }
+
+  // Button enhancements for clean appearance
+  &__option {
+    font-size: 14px !important;
+    line-height: 1.2;
+    transition: all 0.1s ease;
+    border-radius: 4px !important; // Rounded button corners
+    
+    &:not(:last-child) {
+      margin-bottom: 2px;
+    }
+
+    &:first-child {
+      border-top-left-radius: 6px !important;
+      border-top-right-radius: 6px !important;
+    }
+
+    &:last-child {
+      border-bottom-left-radius: 6px !important;
+      border-bottom-right-radius: 6px !important;
+      margin-bottom: 0;
+    }
+
+    // Selected state - light blue background matching screenshot
+    &--selected {
+      background-color: #E7F4FF !important;
+      color: #1B365C !important;
+    }
+
+    &:hover:not(&--selected) {
+      background-color: #F7F9FA !important;
+    }
+  }
+
+  // Position variants
+  &--top-left    { top: 0.5rem; left: 0.5rem; }
+  &--top-right   { top: 0.5rem; right: 0.5rem; }
+  &--bottom-left { bottom: 0.5rem; left: 0.5rem; }
+  &--bottom-right{ bottom: 0.5rem; right: 0.5rem; }
+  &--dropdown    { position: relative; display: inline-block; }
+}
+
+@keyframes basemapFadeIn {
+  from {
+    opacity: 0;
+    transform: translateY(-2px) scale(0.98);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+  }
+}

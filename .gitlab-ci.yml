@@ -1,0 +1,60 @@
+image: python:3.12-slim-bookworm
+
+before_script:
+  - |
+    if ! output=$(scripts/gitlab/gitlab_setup.sh 2>&1); then
+      echo "Script failed with output:"
+      echo "$output"
+      exit 1
+    fi
+
+stages:
+  - build
+  - deploy
+
+
+variables:
+  YARN_CACHE_FOLDER: "$CI_PROJECT_DIR/.yarn-cache"
+
+# Cache dependencies between jobs
+cache:
+  key: ${CI_COMMIT_REF_SLUG}
+  paths:
+    - .yarn-cache/
+    - node_modules/
+
+# Build environment-agnostic artifact
+build:
+  stage: build
+  image: node:20
+  before_script:
+    - node --version
+    - yarn --version
+    - corepack enable
+    - yarn install --immutable
+    - |
+      timestamp=$(date +%Y%m%d-%H%M%S)
+      build_id="${timestamp}-${CI_COMMIT_SHORT_SHA}"
+      echo "BUILD_ID=${build_id}" > build_vars.env
+  script:
+    - ./scripts/build.sh "$build_id"
+  artifacts:
+    name: frontend-artifact
+    paths:
+      - build-artifacts/
+      - build_vars.env
+    expire_in: 30 days
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH
+
+deploy:
+  stage: deploy
+  dependencies:
+    - build
+  script:
+    - . scripts/gitlab/assume_role.sh
+    - source ./build_vars.env
+    - scripts/upload.sh "${BUILD_ID:?}"
+    - scripts/gitlab/push_artifact_version_file.sh "${BUILD_ID:?}"
+  rules:
+    - if: $CI_COMMIT_BRANCH == $CI_DEFAULT_BRANCH

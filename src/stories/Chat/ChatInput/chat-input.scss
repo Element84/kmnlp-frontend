@@ -1,0 +1,177 @@
+@use "../../../NOAA-theme.scss" as *;
+
+.chat-input {
+  padding: 16px;
+  border: 1px solid $Colors-Gray-Lighter;
+  width: 100%;
+  transition: justify-content 0.5s ease-in-out;
+
+  box-sizing: border-box;
+
+  &__form {
+    display: flex;
+    flex-direction: column;
+    gap: 12px;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  &__field-container {
+    position: relative;
+    width: 100%;
+    box-sizing: border-box;
+  }
+
+  &__field {
+    width: 100%;
+    min-height: 40px;
+    max-height: 120px;
+    padding: 0;
+    border: 0px solid $theme-color-base-light;
+    font-family: inherit;
+    font-size: 14px;
+    line-height: 1.4;
+    resize: none;
+    overflow-y: auto;
+    transition: border-color 0.2s ease;
+    box-sizing: border-box;
+    field-sizing: content;
+    /* Optional: Add other styling properties as needed */
+    resize: none; /* Prevents manual resizing by the user */
+    overflow: hidden; /* Hides scrollbars when not needed */
+
+    &:focus {
+      outline: none;
+    }
+
+    &:disabled {
+      background-color: $theme-color-base-lighter;
+      color: $theme-color-base-dark;
+      cursor: not-allowed;
+    }
+
+    &::placeholder {
+      color: $theme-color-base-dark;
+    }
+  }
+
+  &__actions {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+  }
+
+  &__aoi-button {
+    background-color: transparent;
+    border: 2px solid $theme-color-primary;
+    color: $theme-color-primary;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: $theme-color-primary-lighter;
+    }
+
+    &:focus {
+      outline: 2px solid $theme-focus-color;
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__area-button {
+    background-color: $theme-color-base-dark;
+    border: none;
+    color: white;
+    padding: 8px 16px;
+    border-radius: 6px;
+    font-size: 14px;
+    font-weight: 500;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover:not(:disabled) {
+      background-color: $theme-color-base-darker;
+    }
+
+    &:focus {
+      outline: 2px solid $theme-focus-color;
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+  }
+
+  &__submit {
+    background-color: $theme-color-primary;
+    border: none;
+    color: white;
+    width: 40px;
+    height: 40px;
+    border-radius: 8px;
+    cursor: pointer;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    transition: background-color 0.2s ease;
+    margin-left: auto;
+
+    &:hover:not(:disabled) {
+      background-color: $theme-color-primary-dark;
+    }
+
+    &:focus {
+      outline: 2px solid $theme-focus-color;
+      outline-offset: 2px;
+    }
+
+    &:disabled {
+      opacity: 0.6;
+      cursor: not-allowed;
+    }
+
+   
+  }
+
+  &__submit-icon {
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+
+    &--processing {
+      font-size: 14px;
+    }
+  }
+
+  &__stop-icon {
+    font-size: 16px;
+    font-weight: bold;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    color: white;
+  }
+}
+
+@keyframes pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.7;
+  }
+}

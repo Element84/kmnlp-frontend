@@ -1,0 +1,154 @@
+@use "../../../NOAA-theme.scss" as *;
+
+.process-step {
+  display: flex;
+  gap: 12px;
+  padding: 8px 0 0 0;
+  transition: opacity 0.2s ease;
+
+  &--pending {
+    opacity: 0.7;
+  }
+
+  &--failed {
+    .process-step__text {
+      color: $theme-color-error-dark;
+    }
+  }
+
+  &__icon-container {
+    position: relative;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    flex-shrink: 0;
+  }
+
+  &__connector {
+    width: 2px;
+    height: 100%;
+    min-height: 24px;
+    margin-top: 4px;
+    transition: background-color 0.3s ease;
+    &--in_progress,
+    &--pending {
+      background-color: $theme-color-base-light;
+    }
+    &--completed {
+      background-color: $theme-color-success;
+    }
+    &--failed {
+      background-color: $theme-color-error;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    min-width: 0;
+  }
+
+  &__text {
+    font-size: 14px;
+    line-height: 1.4;
+    color: $theme-color-base-darkest;
+    word-wrap: break-word;
+    margin-bottom: 4px;
+  }
+
+  &__substeps {
+    margin: 8px 0 8px 16px;
+    padding: 0;
+    list-style-type: disc;
+    
+    li {
+      font-size: 13px;
+      line-height: 1.5;
+      color: $theme-color-base-dark;
+      margin-bottom: 4px;
+      padding-left: 4px;
+      
+      &:last-child {
+        margin-bottom: 0;
+      }
+    }
+  }
+
+  &__outcome {
+    margin: 6px 0 2px 0;
+    font-size: 13px;
+    line-height: 1.4;
+    color: $theme-color-base-darkest;
+    font-weight: 600;
+    display: block;
+  }
+
+  &__index {
+    font-weight: 600;
+    color: $theme-color-primary;
+  }
+
+  &__progress {
+    margin-top: 6px;
+  }
+
+  &__progress-bar {
+    width: 100%;
+    height: 3px;
+    background-color: $theme-color-base-lighter;
+    border-radius: 2px;
+    overflow: hidden;
+  }
+
+  &__progress-fill {
+    height: 100%;
+    background-color: $theme-color-primary;
+    border-radius: 2px;
+    animation: progress-flow 2s ease-in-out infinite;
+    width: 60%;
+  }
+
+  &__error-indicator {
+    margin-top: 4px;
+  }
+
+  &__error-text {
+    font-size: 12px;
+    color: $theme-color-error;
+    font-weight: 500;
+  }
+}
+
+@keyframes progress-flow {
+  0% {
+    transform: translateX(-100%);
+  }
+  50% {
+    transform: translateX(0%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+@media (prefers-reduced-motion: reduce) {
+  .process-step__progress-fill {
+    animation: none;
+    width: 100%;
+  }
+}
+
+@media (max-width: 768px) {
+  .process-step {
+    gap: 8px;
+    padding: 6px 0;
+
+    &__text {
+      font-size: 16px;
+    }
+
+    &__connector {
+      min-height: 24px;
+      height: 100%;
+    }
+  }
+}

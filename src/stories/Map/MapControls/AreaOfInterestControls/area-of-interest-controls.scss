@@ -1,0 +1,13 @@
+@use '../../../../NOAA-theme.scss' as noaa;
+
+// Minimal custom styles - most styling moved to USWDS utility classes
+.area-of-interest-controls {
+  // Core positioning that can't be done with utilities
+  position: absolute;
+  top: 40px;
+  right: 16px;
+  z-index: 1000;
+  max-width: 350px;
+}
+
+

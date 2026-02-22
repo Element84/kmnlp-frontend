@@ -1,0 +1,179 @@
+import React from "react";
+import "./chat-management-popover.scss";
+
+export interface ChatHistory {
+  id: string;
+  title: string;
+  lastActivity: Date;
+}
+
+export interface ChatManagementPopoverProps {
+  /** Whether the popover is visible */
+  isVisible?: boolean;
+  /** Callback when the popover should be closed */
+  onClose?: () => void;
+  /** Callback when new chat button is clicked */
+  onNewChat?: () => void;
+  /** Callback when a chat is selected from history */
+  onSelectChat?: (chatId: string) => void;
+  /** Array of recent chat conversations */
+  recentChats?: ChatHistory[];
+}
+
+/**
+ * Overlay popover panel that appears over the chat view to show chat management options.
+ * Provides access to chat history and new chat creation functionality.
+ */
+export const ChatManagementPopover = ({
+  isVisible = false,
+  onClose,
+  onNewChat,
+  onSelectChat,
+  recentChats = [
+    { id: "1", title: "Previous Chat 1 - Lorem Ipsum", lastActivity: new Date('2024-10-29T10:30:00Z') },
+    { id: "2", title: "Previous Chat 2 - Lorem Ipsum", lastActivity: new Date('2024-10-28T14:15:00Z') },
+    { id: "3", title: "Previous Chat 3 - Lorem Ipsum", lastActivity: new Date('2024-10-27T09:45:00Z') },
+  ],
+}: ChatManagementPopoverProps) => {
+  const handleBackdropClick = (e: React.MouseEvent) => {
+    if (e.target === e.currentTarget) {
+      onClose?.();
+    }
+  };
+
+  const handleKeyDown = (e: React.KeyboardEvent) => {
+    if (e.key === "Escape") {
+      onClose?.();
+    }
+  };
+
+  if (!isVisible) {
+    return null;
+  }
+
+  return (
+    <div
+      className="chat-management-popover__backdrop"
+      onClick={handleBackdropClick}
+      onKeyDown={handleKeyDown}
+      tabIndex={-1}
+    >
+      <div className="chat-management-popover">
+        <div className="chat-management-popover__header">
+          <div className="chat-management-popover__noaa-logo">
+            <span className="chat-management-popover__noaa-text">
+              {/* TO DO: Need to replace with proper SVGR implementation */}
+              <svg
+                width="36"
+                height="36"
+                viewBox="0 0 41 42"
+                fill="none"
+                xmlns="http://www.w3.org/2000/svg"
+              >
+                <path
+                  d="M38.8731 11.8965C35.9495 16.3193 31.1024 22.4544 25.474 24.5177L24.7565 24.8116C24.8901 24.8724 25.0316 24.9138 25.1768 24.9347C25.2485 24.9347 25.3317 24.9415 25.4251 24.9449C25.539 24.9517 25.6529 24.9529 25.7827 24.9506C25.8028 24.9518 25.8229 24.9518 25.843 24.9506C27.2724 24.8948 29.3554 24.2944 29.7551 25.7481C25.0128 25.9566 23.2635 27.1255 21.6166 27.8889C19.0667 29.3153 15.8311 30.5559 13.715 28.5724C15.4108 28.3446 18.5382 27.3192 19.6372 26.3166C10.6696 26.1959 6.68694 20.6144 3.89666 17.5589C2.89216 16.4036 1.86146 15.4056 0.79888 15.3236C-0.122113 18.5264 -0.248891 21.9056 0.42952 25.1686C1.10793 28.4315 2.57109 31.4799 4.69233 34.0498C6.81357 36.6198 9.52897 38.6338 12.6035 39.9176C15.678 41.2013 19.0189 41.7162 22.3371 41.4175C25.6553 41.1188 28.8507 40.0157 31.6467 38.2035C34.4428 36.3913 36.7552 33.9248 38.3837 31.0173C40.0123 28.1099 40.908 24.8492 40.9933 21.5175C41.0785 18.1858 40.3508 14.8835 38.8731 11.8965Z"
+                  fill="#0085CA"
+                />
+                <path
+                  d="M3.89661 17.5588C6.68688 20.6144 10.6696 26.1959 19.6417 26.3178C18.5382 27.3192 15.4108 28.348 13.7195 28.5736C15.8356 30.5559 19.0723 29.3153 21.6211 27.89C23.268 27.1267 25.0173 25.9532 29.7596 25.7493C29.3599 24.2955 27.2769 24.8959 25.8476 24.9517C25.8274 24.9529 25.8073 24.9529 25.7872 24.9517C25.6619 24.9517 25.5423 24.9517 25.4296 24.946C25.3362 24.946 25.2531 24.9403 25.1813 24.9358C25.0361 24.915 24.8946 24.8735 24.761 24.8127L25.4786 24.5188C31.1069 22.4555 35.9563 16.3159 38.8776 11.8977C38.2902 10.718 37.5903 9.59784 36.7877 8.5527C31.5112 9.51313 29.8257 17.2433 26.8019 21.0713C22.8306 26.6379 19.0211 25.4223 15.0133 21.6945C11.0272 18.0487 8.03077 11.377 3.78955 9.12919C2.4498 11.01 1.43855 13.1045 0.798828 15.3235C1.86141 15.4056 2.89211 16.4036 3.89661 17.5588Z"
+                  fill="white"
+                />
+                <path
+                  d="M15.0133 21.6945C19.0165 25.4211 22.8306 26.6368 26.8008 21.0701C29.8246 17.2433 31.5101 9.51312 36.7877 8.5527C34.8374 6.00056 32.315 3.94247 29.4239 2.54428C26.5327 1.1461 23.3536 0.446935 20.1428 0.503139C16.932 0.559344 13.7793 1.36934 10.9388 2.86786C8.09826 4.36637 5.6494 6.51149 3.78955 9.13032C8.03077 11.3782 11.0215 18.0487 15.0133 21.6945Z"
+                  fill="#003087"
+                />
+                <path
+                  d="M14.6581 13.8242H15.7366V9.51429C15.7366 8.94464 15.1968 8.48892 14.4839 8.48892H12.2642V13.8288H13.3427V9.51429H14.329C14.5385 9.51429 14.6581 9.66354 14.6581 9.90507V13.8242Z"
+                  fill="white"
+                />
+                <path
+                  d="M20.8845 13.8242V9.51426C20.8845 8.85005 21.602 8.48889 21.9619 8.48889H23.2807C23.8183 8.48889 24.357 8.85461 24.357 9.51426V13.8242H23.2807V11.8065H21.9619V13.8242H20.8845ZM23.2762 9.9039C23.2771 9.85306 23.2679 9.80254 23.249 9.75531C23.2302 9.70807 23.2022 9.66506 23.1666 9.62879C23.1309 9.59251 23.0884 9.5637 23.0416 9.54404C22.9947 9.52437 22.9444 9.51425 22.8935 9.51426H22.3241C22.2263 9.52251 22.1351 9.56707 22.0685 9.63918C22.0019 9.71129 21.9647 9.80572 21.9642 9.9039V10.7777H23.2807L23.2762 9.9039Z"
+                  fill="white"
+                />
+                <path
+                  d="M25.1951 13.8242V9.51426C25.1951 8.85005 25.9126 8.48889 26.2725 8.48889H27.5913C28.1277 8.48889 28.6664 8.85461 28.6664 9.51426V13.8242H27.5913V11.8065H26.2725V13.8242H25.1951ZM27.5867 9.9039C27.5878 9.85233 27.5785 9.80108 27.5592 9.75324C27.5399 9.7054 27.5112 9.66196 27.4747 9.62554C27.4382 9.58913 27.3947 9.56049 27.3468 9.54136C27.2989 9.52224 27.2476 9.51302 27.1961 9.51426H26.6267C26.5293 9.52305 26.4387 9.56785 26.3725 9.6399C26.3064 9.71195 26.2695 9.80608 26.269 9.9039V10.7777H27.5879L27.5867 9.9039Z"
+                  fill="white"
+                />
+                <path
+                  d="M18.9573 8.48434H17.6396C17.2809 8.48434 16.5623 8.75436 16.5623 9.50971V12.8273C16.5623 13.3389 17.2217 13.8242 17.6396 13.8242H18.9573C19.4368 13.8242 20.0359 13.2477 20.0359 12.8273V9.50971C20.0359 8.8774 19.4972 8.48434 18.9573 8.48434ZM18.9573 12.4719C18.9573 12.5653 18.9203 12.6548 18.8543 12.7208C18.7883 12.7868 18.6988 12.8239 18.6054 12.8239H17.9961C17.9498 12.8241 17.9039 12.8151 17.8611 12.7975C17.8183 12.7798 17.7793 12.7539 17.7465 12.7212C17.7137 12.6885 17.6877 12.6497 17.67 12.6069C17.6522 12.5641 17.6431 12.5182 17.6431 12.4719V9.83669C17.6431 9.79036 17.6522 9.74449 17.67 9.7017C17.6877 9.65892 17.7137 9.62006 17.7465 9.58735C17.7793 9.55465 17.8183 9.52874 17.8611 9.51112C17.9039 9.49349 17.9498 9.4845 17.9961 9.48465H18.6088C18.6551 9.48465 18.7008 9.49375 18.7435 9.51144C18.7862 9.52914 18.825 9.55507 18.8577 9.58776C18.8904 9.62045 18.9163 9.65926 18.934 9.70197C18.9517 9.74468 18.9608 9.79046 18.9608 9.83669L18.9573 12.4719Z"
+                  fill="white"
+                />
+              </svg>
+            </span>
+          </div>
+          <button
+            className="chat-management-popover__close"
+            onClick={onClose}
+            aria-label="Close chat management"
+          >
+            {/* TO DO: Need to replace with proper SVGR implementation */}
+            <svg
+              width="20"
+              height="21"
+              viewBox="0 0 20 21"
+              fill="none"
+              xmlns="http://www.w3.org/2000/svg"
+            >
+              <path
+                d="M4 1.39062H16C17.864 1.39062 19.375 2.90166 19.375 4.76562V16.7656C19.375 18.6296 17.864 20.1406 16 20.1406H4C2.13604 20.1406 0.625 18.6296 0.625 16.7656V4.76562C0.625 2.90166 2.13604 1.39062 4 1.39062Z"
+                stroke="#0050D8"
+                strokeWidth="1.25"
+              />
+              <path d="M7 1V20" stroke="#0050D8" strokeWidth="1.25" />
+            </svg>
+          </button>
+        </div>
+
+        <div className="chat-management-popover__content">
+          <div className="chat-management-popover__new-chat-section">
+            <button
+              className="chat-management-popover__new-chat"
+              onClick={onNewChat}
+            >
+              <span className="chat-management-popover__plus-icon">
+                <svg
+                  width="20"
+                  height="21"
+                  viewBox="0 0 20 21"
+                  fill="none"
+                  xmlns="http://www.w3.org/2000/svg"
+                >
+                  <path
+                    d="M18.2031 0.776367C19.2084 0.879199 19.9998 1.73448 20 2.76562V14.7656L19.9893 14.9697C19.8929 15.9077 19.1413 16.659 18.2031 16.7549L18 16.7656H3.99902L0 20.7656L0.0107422 2.76562C0.0109318 1.66592 0.900301 0.765817 2 0.765625H18L18.2031 0.776367ZM2 1.94238C1.55812 1.94258 1.18671 2.30757 1.18652 2.76562L1.17773 17.9229L3.51172 15.5889H18C18.4504 15.5887 18.8228 15.2148 18.8232 14.7656V2.76562C18.823 2.31567 18.45 1.94258 18 1.94238H2ZM10.7646 8.16504H13.8232V9.69434H10.7646V12.7529H9.23535V9.69434H6.17676V8.16504H9.23535V5.10645H10.7646V8.16504Z"
+                    fill="#0050D8"
+                  />
+                </svg>
+              </span>
+              New Chat
+            </button>
+          </div>
+
+          <div className="chat-management-popover__recents-section">
+            <h3 className="chat-management-popover__recents-title">Recents</h3>
+            <div className="chat-management-popover__recents-list">
+              {recentChats.map((chat) => (
+                <button
+                  key={chat.id}
+                  className="chat-management-popover__recent-chat"
+                  onClick={() => {
+                    onSelectChat?.(chat.id);
+                    onClose?.(); // Close popover after selection
+                  }}
+                >
+                  <span className="chat-management-popover__chat-title">
+                    {chat.title}
+                  </span>
+                  {chat.lastActivity && (
+                    <span className="chat-management-popover__chat-time">
+                      {chat.lastActivity.toLocaleDateString()}
+                    </span>
+                  )}
+                </button>
+              ))}
+            </div>
+          </div>
+        </div>
+      </div>
+    </div>
+  );
+};

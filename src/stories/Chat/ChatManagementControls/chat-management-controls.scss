@@ -1,0 +1,74 @@
+@use "../../../NOAA-theme.scss" as *;
+
+.chat-management-controls {
+  display: flex;
+  flex-direction: column;
+  gap: 8px;
+  padding: 8px;
+  background: $theme-color-white;
+  height: 100%; // Fill the dedicated bar height
+  width: 100%; // Fill the dedicated bar width
+  align-items: center;
+  
+  &__toggle {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    border: 0px;
+    background: $theme-color-white;
+    border-radius: 4px;
+    cursor: pointer;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $theme-color-primary-lighter;
+      border-color: $theme-color-primary-dark;
+    }
+
+    &--active {
+      background: $theme-color-primary;
+      color: $theme-color-white;
+
+      &:hover {
+        background: $theme-color-primary-dark;
+      }
+    }
+
+    &-icon {
+      font-size: 14px;
+      line-height: 1;
+    }
+  }
+
+  &__new-chat {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    width: 32px;
+    height: 32px;
+    padding: 6px;
+    border: 0px;
+    background: $theme-color-white;
+    color: $theme-color-primary;
+    border-radius: 4px;
+    cursor: pointer;
+    font-size: 12px;
+    font-weight: 600;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $theme-color-primary-lighter;
+      border-color: $theme-color-primary-dark;
+    }
+  }
+
+  &__plus-icon {
+    font-size: 14px;
+    line-height: 1;
+    font-weight: bold;
+  }
+}
+
+// Note: Controls are now always compact to fit in dedicated 60px bar

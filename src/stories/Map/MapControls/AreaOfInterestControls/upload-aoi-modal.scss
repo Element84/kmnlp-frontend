@@ -1,0 +1,73 @@
+@use '../../../../NOAA-theme.scss' as *;
+
+// Upload AOI Modal - minimal custom styles, using USWDS utility classes in component
+.upload-aoi-modal {
+  &__backdrop {
+    backdrop-filter: blur(2px);
+  }
+
+  &__close-button {
+    transition: color 0.2s ease;
+
+    &:hover {
+      color: $Colors-Base !important;
+    }
+  }
+
+  &__drop-zone {
+    border: 2px dashed $Colors-Gray-Light;
+    transition: all 0.2s ease;
+
+    &:hover {
+      border-color: $Colors-Primary-Blue;
+      background: rgba($Colors-Primary-Blue, 0.05);
+    }
+
+    &:focus {
+      border-color: $Colors-Primary-Blue;
+    }
+
+    &--dragging {
+      border-color: $Colors-Primary-Blue;
+      background: rgba($Colors-Primary-Blue, 0.1);
+      border-width: 3px;
+    }
+
+    &--processing {
+      pointer-events: none;
+    }
+  }
+
+  &__icon {
+    transition: color 0.2s ease;
+
+    .upload-aoi-modal__drop-zone:hover &,
+    .upload-aoi-modal__drop-zone--dragging & {
+      color: $Colors-Primary-Blue;
+    }
+  }
+}
+
+// Responsive adjustments
+@media (max-width: 768px) {
+  .upload-aoi-modal {
+    &__drop-zone {
+      padding: $Spacing-large-gap * 2;
+    }
+  }
+}
+
+// Reduced motion support
+@media (prefers-reduced-motion: reduce) {
+  .upload-aoi-modal {
+    &__backdrop {
+      backdrop-filter: none;
+    }
+
+    &__close-button,
+    &__drop-zone,
+    &__icon {
+      transition: none;
+    }
+  }
+}

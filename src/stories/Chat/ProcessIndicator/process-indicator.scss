@@ -1,0 +1,93 @@
+@use "../../../NOAA-theme.scss" as *;
+
+// Status indicator bar (custom element)
+.status {
+  position: absolute;
+  left: 0;
+  top: 0;
+  bottom: 0;
+  width: 12px;
+  height: 100%;
+}
+
+.process-indicator {
+  position: relative;
+
+  // Status-specific backgrounds for the status bar
+  &--in_progress {
+    background: linear-gradient(306deg, #2491ff, #0050d8, #2491ff);
+    background-size: 180% 180%;
+    animation: gradient-animation 6s ease infinite;
+    border-radius: 8px 0 0 8px;
+  }
+
+  &--failed {
+    background-color: $theme-color-error;
+    border-radius: 8px 0 0 8px;
+  }
+
+  &--completed {
+    background-color: $theme-color-success;
+    border-radius: 8px 0 0 8px;
+  }
+
+  &--pending {
+    background-color: $theme-color-base-light;
+    opacity: 0.9;
+    border-radius: 8px 0 0 8px;
+  }
+
+  // Custom animations
+  @keyframes gradient-animation {
+    0% {
+      background-position: 0% 50%;
+    }
+    50% {
+      background-position: 100% 50%;
+    }
+    100% {
+      background-position: 0% 50%;
+    }
+  }
+
+  // Toggle icon rotation animation
+  &__toggle-icon {
+    display: inline-block;
+    transition: transform 0.2s ease;
+
+    &--collapsed {
+      transform: rotate(180deg);
+    }
+  }
+
+  // Content expand animation
+  &__content {
+    animation: expand 0.2s ease-out;
+  }
+}
+
+@keyframes expand {
+  from {
+    opacity: 0;
+    transform: translateY(-8px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+// Reduced motion preferences
+@media (prefers-reduced-motion: reduce) {
+  .process-indicator__content {
+    animation: none;
+  }
+
+  .process-indicator__toggle-icon {
+    transition: none;
+  }
+
+  .process-indicator--in_progress {
+    animation: none;
+  }
+}

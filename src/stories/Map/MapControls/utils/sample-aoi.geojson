@@ -1,0 +1,24 @@
+{
+  "type": "FeatureCollection",
+  "features": [
+    {
+      "type": "Feature",
+      "geometry": {
+        "type": "Polygon",
+        "coordinates": [
+          [
+            [-122.5, 37.7],
+            [-122.3, 37.7],
+            [-122.3, 37.9],
+            [-122.5, 37.9],
+            [-122.5, 37.7]
+          ]
+        ]
+      },
+      "properties": {
+        "name": "San Francisco Bay Area",
+        "description": "Sample area of interest covering part of the SF Bay Area"
+      }
+    }
+  ]
+}

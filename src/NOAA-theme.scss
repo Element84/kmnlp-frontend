@@ -1,0 +1,63 @@
+/* NOAA-KMNLP - Mode 1 */
+@use "sass:color";
+$Colors-Darkest-Blue: #162E51FF;
+$Colors-Dark-Blue: #0050D8FF;
+$Colors-Primary-Blue: #0076D6FF;
+$Colors-Primary-Light: #2491FFFF;
+$Colors-Success-Alert: #21C834FF;
+$Colors-Warning-Alert: #FACE00FF;
+$Colors-Info-Alert: #29E1CBFF;
+$Colors-Error-Alert: #E41D3DFF;
+$Colors-Base: #1C1D1FFF;
+$Colors-Gray-Dark: #3D4551FF;
+$Colors-Gray: #8D9297FF;
+$Colors-Gray-Light: #C6CACEFF;
+$Colors-Gray-Lighter: #DCDEE0FF;
+$Colors-Gray-Lightest: #F1F3F6FF;
+$Colors-White: #FFFFFFFF;
+$Colors-blue-button: #B2D5F2FF;
+$Colors-blue-button-hover-2: #79B6E9FF;
+$Colors-Accent-Dark: #00BDE3FF;
+$Colors-Accent: #52DAF2FF;
+$Colors-Accent-Light: #A8F2FFFF;
+$Spacing-Extra-small-gap: 4px;
+$Spacing-small-gap: 8px;
+$Spacing-medium-gap: 12px;
+$Spacing-large-gap: 16px;
+$Stroke-Width-Primary-Stroke-Width: 1px;
+$Stroke-Width-Large-Stroke-Width: 2px;
+$Stroke-Width-Extra-Large-Stroke-Width: 3px;
+$Radius-Rounded-Corner: 4px;
+$Radius-Rounded-Corner-Md: 8px;
+$Radius-Rounded-Corner-Lg: 12px;
+$Number: 24px;
+
+// Theme variables mapped to NOAA colors
+// Base colors
+$theme-color-base-darkest: $Colors-Base;
+$theme-color-base-darker: $Colors-Gray-Dark;
+$theme-color-base-dark: $Colors-Gray;
+$theme-color-base: $Colors-Gray;
+$theme-color-base-light: $Colors-Gray-Light;
+$theme-color-base-lighter: $Colors-Gray-Lighter;
+$theme-color-base-lightest: $Colors-Gray-Lightest;
+$theme-color-white: $Colors-White;
+
+// Primary colors
+$theme-color-primary: $Colors-Primary-Blue;
+$theme-color-primary-dark: $Colors-Dark-Blue;
+$theme-color-primary-darker: $Colors-Darkest-Blue;
+$theme-color-primary-light: $Colors-Primary-Light;
+$theme-color-primary-lighter: $Colors-blue-button;
+
+// State colors
+$theme-color-success: $Colors-Success-Alert;
+$theme-color-error: $Colors-Error-Alert;
+$theme-color-error-dark: color.adjust($Colors-Error-Alert, $lightness: -10%);
+$theme-color-error-light: color.adjust($Colors-Error-Alert, $lightness: 20%);
+$theme-color-error-lighter: color.adjust($Colors-Error-Alert, $lightness: 30%);
+$theme-color-warning: $Colors-Warning-Alert;
+$theme-color-info: $Colors-Info-Alert;
+
+// Focus color
+$theme-focus-color: $Colors-Primary-Light;

@@ -1,0 +1,96 @@
+{
+  "name": "NOAA-KMNLP-Front-End",
+  "version": "0.2.0",
+  "type": "module",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "@storybook/addon-vitest": "^9.1.10",
+    "@storybook/test": "^8.6.14",
+    "@trussworks/react-uswds": "^10.0.2",
+    "@types/mapbox-gl": "^3.4.1",
+    "@types/node": "^24.3.0",
+    "@uswds/uswds": "^3.11.0",
+    "focus-trap-react": "^11.0.4",
+    "geotiff": "^2.1.4-beta.0",
+    "jotai": "^2.15.1",
+    "maplibre-gl": "^5.7.0",
+    "path": "^0.12.7",
+    "react": "^18.2.0",
+    "react-dom": "^18.2.0",
+    "react-map-gl": "^8.0.4",
+    "react-markdown": "^10.1.0",
+    "react-syntax-highlighter": "^16.1.0",
+    "remark-gfm": "^4.0.1",
+    "sass": "^1.85.1",
+    "vite-plugin-svgr": "^4.5.0"
+  },
+  "scripts": {
+    "dev": "vite",
+    "build": "vite build",
+    "preview": "vite preview",
+    "storybook": "storybook dev -p 6006",
+    "build-storybook": "storybook build",
+    "init-msw": "msw init public/",
+    "screenshots": "npx tsx scripts/take-screenshots.ts",
+    "screenshots:all": "npm run screenshots -- --all",
+    "screenshots:map": "npm run screenshots -- --group map_components",
+    "screenshots:chat": "npm run screenshots -- --group chat_components",
+    "test": "vitest",
+    "test:run": "vitest run",
+    "test:ui": "vitest --ui",
+    "test:coverage": "vitest run --coverage",
+    "test:screenshots": "npx playwright test tests/screenshot.spec.ts"
+  },
+  "devDependencies": {
+    "@eslint/js": "^9.9.0",
+    "@playwright/test": "^1.55.0",
+    "@storybook/addon-docs": "^9.1.10",
+    "@storybook/addon-links": "^9.1.10",
+    "@storybook/react-vite": "^9.1.10",
+    "@testing-library/jest-dom": "^6.9.1",
+    "@testing-library/react": "^16.3.0",
+    "@testing-library/user-event": "^14.6.1",
+    "@types/d3": "^7",
+    "@types/jsdom": "^27",
+    "@types/react": "^18.3.3",
+    "@types/react-dom": "^18.3.0",
+    "@types/react-syntax-highlighter": "^15.5.13",
+    "@types/uswds__uswds": "^3",
+    "@vitejs/plugin-react": "^5.0.0",
+    "d3": "^7.9.0",
+    "eslint": "^9.9.0",
+    "eslint-plugin-react": "^7.34.1",
+    "eslint-plugin-react-hooks": "^5.1.0-rc.0",
+    "eslint-plugin-react-refresh": "^0.4.9",
+    "eslint-plugin-storybook": "^9.1.10",
+    "globals": "^15.9.0",
+    "jsdom": "^27.0.0",
+    "msw": "^2.3.0",
+    "msw-storybook-addon": "^2.0.3",
+    "playwright": "^1.55.0",
+    "postcss": "^8.5.6",
+    "proj4": "^2.19.10",
+    "storybook": "^9.1.10",
+    "storybook-addon-sass-postcss": "^0.3.2",
+    "tsx": "^4.20.5",
+    "typescript": "^5.5.3",
+    "typescript-eslint": "^8.0.1",
+    "vite": "^5.4.1",
+    "vitest": "^3.2.4"
+  },
+  "resolutions": {
+    "jackspeak": "2.1.1"
+  },
+  "eslintConfig": {
+    "extends": [
+      "plugin:storybook/recommended"
+    ]
+  },
+  "msw": {
+    "workerDirectory": [
+      "public"
+    ]
+  },
+  "packageManager": "yarn@4.9.2+sha512.1fc009bc09d13cfd0e19efa44cbfc2b9cf6ca61482725eb35bbc5e257e093ebf4130db6dfe15d604ff4b79efd8e1e8e99b25fa7d0a6197c9f9826358d4d65c3c"
+}

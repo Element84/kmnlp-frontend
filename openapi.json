@@ -1,0 +1,2143 @@
+{
+  "openapi": "3.1.0",
+  "info": {
+    "title": "FastAPI",
+    "version": "0.1.0"
+  },
+  "paths": {
+    "/users": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get Users",
+        "description": "Get all user IDs.",
+        "operationId": "get_users_users_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "type": "string"
+                  },
+                  "type": "array",
+                  "title": "Response Get Users Users Get"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Create User",
+        "description": "Create new user.",
+        "operationId": "create_user_users_post",
+        "requestBody": {
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/UserCreateRequest"
+              }
+            }
+          },
+          "required": true
+        },
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Create User Users Post"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/users/{user_id}": {
+      "get": {
+        "tags": [
+          "users"
+        ],
+        "summary": "Get User",
+        "description": "Get a user with their chat IDs.",
+        "operationId": "get_user_users__user_id__get",
+        "parameters": [
+          {
+            "name": "user_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "User Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/UserResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats": {
+      "get": {
+        "tags": [
+          "chats"
+        ],
+        "summary": "Get User Chats",
+        "description": "Fetch user chats.",
+        "operationId": "get_user_chats_chats_get",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChatHeader"
+                  },
+                  "title": "Response Get User Chats Chats Get"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "chats"
+        ],
+        "summary": "Start Chat",
+        "description": "Start chat session.",
+        "operationId": "start_chat_chats_post",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Chat"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/chats/{chat_id}": {
+      "get": {
+        "tags": [
+          "chats"
+        ],
+        "summary": "Get Chat",
+        "description": "Get a chat by ID.",
+        "operationId": "get_chat_chats__chat_id__get",
+        "parameters": [
+          {
+            "name": "chat_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Chat Id"
+            }
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/Chat"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      },
+      "post": {
+        "tags": [
+          "chats"
+        ],
+        "summary": "Post To Chat",
+        "description": "Reply to a chat message.",
+        "operationId": "post_to_chat_chats__chat_id__post",
+        "parameters": [
+          {
+            "name": "chat_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Chat Id"
+            }
+          },
+          {
+            "name": "stub_image",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "boolean",
+              "default": false,
+              "title": "Stub Image"
+            }
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/ChatRequest"
+              }
+            }
+          }
+        },
+        "responses": {
+          "200": {
+            "description": "ND-JSON stream of ChatResponses",
+            "content": {
+              "application/x-ndjson": {
+                "schema": {
+                  "type": "array",
+                  "items": {
+                    "$ref": "#/components/schemas/ChatResponse"
+                  }
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aois": {
+      "post": {
+        "tags": [
+          "AOIs"
+        ],
+        "summary": "Create Area Of Interest",
+        "description": "Create an AOI in the backend and return its UUID.",
+        "operationId": "create_area_of_interest_aois_post",
+        "responses": {
+          "201": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "format": "uuid",
+                  "title": "Response Create Area Of Interest Aois Post"
+                }
+              }
+            }
+          }
+        }
+      },
+      "get": {
+        "tags": [
+          "AOIs"
+        ],
+        "summary": "List Aois",
+        "description": "List AOI summaries for user.",
+        "operationId": "list_aois_aois_get",
+        "parameters": [
+          {
+            "name": "after_cursor",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "null"
+                }
+              ],
+              "title": "After Cursor"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AOIListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/aois/{aoi_id}": {
+      "get": {
+        "tags": [
+          "AOIs"
+        ],
+        "summary": "Get Aoi",
+        "description": "Get single AOI for user.",
+        "operationId": "get_aoi_aois__aoi_id__get",
+        "parameters": [
+          {
+            "name": "aoi_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Aoi Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/AOIListResponse"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/health": {
+      "get": {
+        "summary": "Health Check",
+        "description": "Use the check whether server is ready to receive requests.",
+        "operationId": "health_check_health_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "type": "string",
+                  "title": "Response Health Check Health Get"
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components": {
+    "schemas": {
+      "AOIListResponse": {
+        "properties": {
+          "aois": {
+            "items": {
+              "$ref": "#/components/schemas/AOISummary"
+            },
+            "type": "array",
+            "title": "Aois"
+          },
+          "pagination_info": {
+            "$ref": "#/components/schemas/PaginationInfo"
+          }
+        },
+        "type": "object",
+        "required": [
+          "aois",
+          "pagination_info"
+        ],
+        "title": "AOIListResponse",
+        "description": "Response model for listing AOIs."
+      },
+      "AOISummary": {
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "title": "Uuid"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "uuid",
+          "name",
+          "created_at"
+        ],
+        "title": "AOISummary",
+        "description": "AOI Summary."
+      },
+      "BackendError": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "BackendError",
+            "title": "Content Type",
+            "default": "BackendError"
+          },
+          "message": {
+            "type": "string",
+            "title": "Message"
+          }
+        },
+        "type": "object",
+        "required": [
+          "message"
+        ],
+        "title": "BackendError",
+        "description": "API error message."
+      },
+      "Chat": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "messages": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/ChatRequest"
+                },
+                {
+                  "$ref": "#/components/schemas/ChatResponse-Output"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Messages"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Date Created"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "date_created"
+        ],
+        "title": "Chat",
+        "description": "External representation of chat data exposed via API."
+      },
+      "ChatHeader": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "date_created": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Date Created"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "date_created"
+        ],
+        "title": "ChatHeader",
+        "description": "Chat header with minimal information."
+      },
+      "ChatRequest": {
+        "properties": {
+          "content": {
+            "type": "string",
+            "title": "Content"
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          },
+          "ui_state": {
+            "$ref": "#/components/schemas/UIState"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "ChatRequest",
+        "description": "/chat/ input model."
+      },
+      "ChatResponse-Input": {
+        "properties": {
+          "content": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BackendError"
+              },
+              {
+                "$ref": "#/components/schemas/EndOfTurn"
+              },
+              {
+                "$ref": "#/components/schemas/Text"
+              },
+              {
+                "$ref": "#/components/schemas/Plan-Input"
+              },
+              {
+                "$ref": "#/components/schemas/GeoTIFF"
+              },
+              {
+                "$ref": "#/components/schemas/GeocodedAOI-Input"
+              },
+              {
+                "$ref": "#/components/schemas/Image"
+              }
+            ],
+            "title": "Content",
+            "discriminator": {
+              "propertyName": "content_type",
+              "mapping": {
+                "BackendError": "#/components/schemas/BackendError",
+                "EndOfTurn": "#/components/schemas/EndOfTurn",
+                "GeoTIFF": "#/components/schemas/GeoTIFF",
+                "GeocodedAOI": "#/components/schemas/GeocodedAOI-Input",
+                "Image": "#/components/schemas/Image",
+                "Plan": "#/components/schemas/Plan-Input",
+                "Text": "#/components/schemas/Text"
+              }
+            }
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "ChatResponse",
+        "description": "/chat/ response model."
+      },
+      "ChatResponse-Output": {
+        "properties": {
+          "content": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/BackendError"
+              },
+              {
+                "$ref": "#/components/schemas/EndOfTurn"
+              },
+              {
+                "$ref": "#/components/schemas/Text"
+              },
+              {
+                "$ref": "#/components/schemas/Plan-Output"
+              },
+              {
+                "$ref": "#/components/schemas/GeoTIFF"
+              },
+              {
+                "$ref": "#/components/schemas/GeocodedAOI-Output"
+              },
+              {
+                "$ref": "#/components/schemas/Image"
+              }
+            ],
+            "title": "Content",
+            "discriminator": {
+              "propertyName": "content_type",
+              "mapping": {
+                "BackendError": "#/components/schemas/BackendError",
+                "EndOfTurn": "#/components/schemas/EndOfTurn",
+                "GeoTIFF": "#/components/schemas/GeoTIFF",
+                "GeocodedAOI": "#/components/schemas/GeocodedAOI-Output",
+                "Image": "#/components/schemas/Image",
+                "Plan": "#/components/schemas/Plan-Output",
+                "Text": "#/components/schemas/Text"
+              }
+            }
+          },
+          "timestamp": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Timestamp"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "ChatResponse",
+        "description": "/chat/ response model."
+      },
+      "DataAnalysisDetails-Input": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "DataAnalysisDetails",
+            "title": "Content Type",
+            "default": "DataAnalysisDetails"
+          },
+          "problem": {
+            "$ref": "#/components/schemas/DataAnalysisProblem"
+          },
+          "solution": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DataAnalysisSolution"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "outputs": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/DataAnalysisOutput"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outputs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "problem"
+        ],
+        "title": "DataAnalysisDetails",
+        "description": "Dataset analysis details."
+      },
+      "DataAnalysisDetails-Output": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "DataAnalysisDetails",
+            "title": "Content Type",
+            "default": "DataAnalysisDetails"
+          },
+          "problem": {
+            "$ref": "#/components/schemas/DataAnalysisProblem"
+          },
+          "solution": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/DataAnalysisSolution"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          },
+          "outputs": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/DataAnalysisOutput"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outputs"
+          }
+        },
+        "type": "object",
+        "required": [
+          "problem"
+        ],
+        "title": "DataAnalysisDetails",
+        "description": "Dataset analysis details."
+      },
+      "DataAnalysisOutput": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "value": {
+            "type": "string",
+            "title": "Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "value"
+        ],
+        "title": "DataAnalysisOutput",
+        "description": "A data analysis output."
+      },
+      "DataAnalysisProblem": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "DataAnalysisProblem",
+            "title": "Content Type",
+            "default": "DataAnalysisProblem"
+          },
+          "statement": {
+            "type": "string",
+            "title": "Statement"
+          },
+          "inputs_provided": {
+            "items": {
+              "$ref": "#/components/schemas/Variable"
+            },
+            "type": "array",
+            "title": "Inputs Provided"
+          },
+          "outputs_requested": {
+            "items": {
+              "$ref": "#/components/schemas/Variable"
+            },
+            "type": "array",
+            "title": "Outputs Requested"
+          }
+        },
+        "type": "object",
+        "required": [
+          "statement",
+          "inputs_provided",
+          "outputs_requested"
+        ],
+        "title": "DataAnalysisProblem",
+        "description": "A data analysis problem."
+      },
+      "DataAnalysisSolution": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "DataAnalysisSolution",
+            "title": "Content Type",
+            "default": "DataAnalysisSolution"
+          },
+          "thoughts": {
+            "type": "string",
+            "title": "Thoughts"
+          },
+          "pseudocode": {
+            "type": "string",
+            "title": "Pseudocode"
+          },
+          "explanation": {
+            "type": "string",
+            "title": "Explanation"
+          }
+        },
+        "type": "object",
+        "required": [
+          "thoughts",
+          "pseudocode",
+          "explanation"
+        ],
+        "title": "DataAnalysisSolution",
+        "description": "A data analysis solution."
+      },
+      "DatasetMetadata": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "DatasetMetadata",
+            "title": "Content Type",
+            "default": "DatasetMetadata"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          },
+          "temporal_coverage": {
+            "type": "string",
+            "title": "Temporal Coverage"
+          },
+          "spatial_coverage": {
+            "type": "string",
+            "title": "Spatial Coverage"
+          },
+          "variables": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Variables"
+          },
+          "landing_page": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Landing Page"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title",
+          "description",
+          "temporal_coverage",
+          "spatial_coverage",
+          "variables",
+          "landing_page"
+        ],
+        "title": "DatasetMetadata",
+        "description": "Dataset metadata."
+      },
+      "DatasetSearchDetails": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "DatasetSearchDetails",
+            "title": "Content Type",
+            "default": "DatasetSearchDetails"
+          },
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "results": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/DatasetMetadata"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Results"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query"
+        ],
+        "title": "DatasetSearchDetails",
+        "description": "Dataset search details."
+      },
+      "EndOfTurn": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "EndOfTurn",
+            "title": "Content Type",
+            "default": "EndOfTurn"
+          }
+        },
+        "type": "object",
+        "title": "EndOfTurn",
+        "description": "End of LLM turn."
+      },
+      "GeoJSONFeature-Input": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "Feature",
+            "title": "Type",
+            "default": "Feature"
+          },
+          "geometry": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GeoJSONGeometry-Input"
+              },
+              {
+                "$ref": "#/components/schemas/GeoJSONGeometryCollection-Input"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geometry"
+          },
+          "properties": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Properties"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array",
+                "maxItems": 4,
+                "minItems": 4
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox"
+          }
+        },
+        "type": "object",
+        "title": "GeoJSONFeature",
+        "description": "A GeoJSON Feature."
+      },
+      "GeoJSONFeature-Output": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "Feature",
+            "title": "Type",
+            "default": "Feature"
+          },
+          "geometry": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GeoJSONGeometry-Output"
+              },
+              {
+                "$ref": "#/components/schemas/GeoJSONGeometryCollection-Output"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Geometry"
+          },
+          "properties": {
+            "anyOf": [
+              {
+                "additionalProperties": true,
+                "type": "object"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Properties"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array",
+                "maxItems": 4,
+                "minItems": 4
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox"
+          }
+        },
+        "type": "object",
+        "title": "GeoJSONFeature",
+        "description": "A GeoJSON Feature."
+      },
+      "GeoJSONFeatureCollection-Input": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "FeatureCollection",
+            "title": "Type",
+            "default": "FeatureCollection"
+          },
+          "features": {
+            "items": {
+              "$ref": "#/components/schemas/GeoJSONFeature-Input"
+            },
+            "type": "array",
+            "title": "Features"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array",
+                "maxItems": 4,
+                "minItems": 4
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox"
+          }
+        },
+        "type": "object",
+        "required": [
+          "features"
+        ],
+        "title": "GeoJSONFeatureCollection",
+        "description": "A GeoJSON FeatureCollection."
+      },
+      "GeoJSONFeatureCollection-Output": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "FeatureCollection",
+            "title": "Type",
+            "default": "FeatureCollection"
+          },
+          "features": {
+            "items": {
+              "$ref": "#/components/schemas/GeoJSONFeature-Output"
+            },
+            "type": "array",
+            "title": "Features"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array",
+                "maxItems": 4,
+                "minItems": 4
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox"
+          }
+        },
+        "type": "object",
+        "required": [
+          "features"
+        ],
+        "title": "GeoJSONFeatureCollection",
+        "description": "A GeoJSON FeatureCollection."
+      },
+      "GeoJSONGeometry-Input": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "Point",
+              "MultiPoint",
+              "LineString",
+              "MultiLineString",
+              "Polygon",
+              "MultiPolygon"
+            ],
+            "title": "Type"
+          },
+          "coordinates": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Point"
+                },
+                "type": "array"
+              },
+              {
+                "items": {
+                  "$ref": "#/components/schemas/LinearRing"
+                },
+                "type": "array"
+              },
+              {
+                "items": {
+                  "items": {
+                    "$ref": "#/components/schemas/LinearRing"
+                  },
+                  "type": "array"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Coordinates"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array",
+                "maxItems": 4,
+                "minItems": 4
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "coordinates"
+        ],
+        "title": "GeoJSONGeometry",
+        "description": "A GeoJSON Geometry."
+      },
+      "GeoJSONGeometry-Output": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "enum": [
+              "Point",
+              "MultiPoint",
+              "LineString",
+              "MultiLineString",
+              "Polygon",
+              "MultiPolygon"
+            ],
+            "title": "Type"
+          },
+          "coordinates": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/Point"
+              },
+              {
+                "items": {
+                  "$ref": "#/components/schemas/Point"
+                },
+                "type": "array"
+              },
+              {
+                "items": {
+                  "$ref": "#/components/schemas/LinearRing"
+                },
+                "type": "array"
+              },
+              {
+                "items": {
+                  "items": {
+                    "$ref": "#/components/schemas/LinearRing"
+                  },
+                  "type": "array"
+                },
+                "type": "array"
+              }
+            ],
+            "title": "Coordinates"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array",
+                "maxItems": 4,
+                "minItems": 4
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox"
+          }
+        },
+        "type": "object",
+        "required": [
+          "type",
+          "coordinates"
+        ],
+        "title": "GeoJSONGeometry",
+        "description": "A GeoJSON Geometry."
+      },
+      "GeoJSONGeometryCollection-Input": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "GeometryCollection",
+            "title": "Type",
+            "default": "GeometryCollection"
+          },
+          "geometries": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/GeoJSONGeometry-Input"
+                },
+                {
+                  "$ref": "#/components/schemas/GeoJSONGeometryCollection-Input"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Geometries"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array",
+                "maxItems": 4,
+                "minItems": 4
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox"
+          }
+        },
+        "type": "object",
+        "required": [
+          "geometries"
+        ],
+        "title": "GeoJSONGeometryCollection",
+        "description": "A GeoJSON GeometryCollection."
+      },
+      "GeoJSONGeometryCollection-Output": {
+        "properties": {
+          "type": {
+            "type": "string",
+            "const": "GeometryCollection",
+            "title": "Type",
+            "default": "GeometryCollection"
+          },
+          "geometries": {
+            "items": {
+              "anyOf": [
+                {
+                  "$ref": "#/components/schemas/GeoJSONGeometry-Output"
+                },
+                {
+                  "$ref": "#/components/schemas/GeoJSONGeometryCollection-Output"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Geometries"
+          },
+          "bbox": {
+            "anyOf": [
+              {
+                "prefixItems": [
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  },
+                  {
+                    "type": "number"
+                  }
+                ],
+                "type": "array",
+                "maxItems": 4,
+                "minItems": 4
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Bbox"
+          }
+        },
+        "type": "object",
+        "required": [
+          "geometries"
+        ],
+        "title": "GeoJSONGeometryCollection",
+        "description": "A GeoJSON GeometryCollection."
+      },
+      "GeoTIFF": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "GeoTIFF",
+            "title": "Content Type",
+            "default": "GeoTIFF"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          },
+          "legend": {
+            "$ref": "#/components/schemas/Legend"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url",
+          "legend"
+        ],
+        "title": "GeoTIFF",
+        "description": "A GeoTIFF to show on a map."
+      },
+      "GeocodedAOI-Input": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "GeocodedAOI",
+            "title": "Content Type",
+            "default": "GeocodedAOI"
+          },
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "geojson": {
+            "$ref": "#/components/schemas/GeoJSONFeatureCollection-Input"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "geojson"
+        ],
+        "title": "GeocodedAOI",
+        "description": "Geocoded AOI."
+      },
+      "GeocodedAOI-Output": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "GeocodedAOI",
+            "title": "Content Type",
+            "default": "GeocodedAOI"
+          },
+          "query": {
+            "type": "string",
+            "title": "Query"
+          },
+          "geojson": {
+            "$ref": "#/components/schemas/GeoJSONFeatureCollection-Output"
+          }
+        },
+        "type": "object",
+        "required": [
+          "query",
+          "geojson"
+        ],
+        "title": "GeocodedAOI",
+        "description": "Geocoded AOI."
+      },
+      "HTTPValidationError": {
+        "properties": {
+          "detail": {
+            "items": {
+              "$ref": "#/components/schemas/ValidationError"
+            },
+            "type": "array",
+            "title": "Detail"
+          }
+        },
+        "type": "object",
+        "title": "HTTPValidationError"
+      },
+      "Image": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "Image",
+            "title": "Content Type",
+            "default": "Image"
+          },
+          "media_type": {
+            "type": "string",
+            "const": "image/png",
+            "title": "Media Type",
+            "default": "image/png"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "Image",
+        "description": "An image to display in chat."
+      },
+      "Legend": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "Legend",
+            "title": "Content Type",
+            "default": "Legend"
+          },
+          "label": {
+            "type": "string",
+            "title": "Label"
+          },
+          "units": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Units"
+          },
+          "min_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Min Value"
+          },
+          "max_value": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Max Value"
+          }
+        },
+        "type": "object",
+        "required": [
+          "label",
+          "units",
+          "min_value",
+          "max_value"
+        ],
+        "title": "Legend",
+        "description": "A Legend to show on a map."
+      },
+      "LinearRing": {
+        "items": {
+          "$ref": "#/components/schemas/Point"
+        },
+        "type": "array"
+      },
+      "PaginationInfo": {
+        "properties": {
+          "total_count": {
+            "type": "integer",
+            "title": "Total Count"
+          },
+          "next_cursor": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Next Cursor"
+          }
+        },
+        "type": "object",
+        "required": [
+          "total_count",
+          "next_cursor"
+        ],
+        "title": "PaginationInfo",
+        "description": "Generic pagination information."
+      },
+      "Plan-Input": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "Plan",
+            "title": "Content Type",
+            "default": "Plan"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/Step-Input"
+            },
+            "type": "array",
+            "title": "Steps"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "steps"
+        ],
+        "title": "Plan",
+        "description": "Plan."
+      },
+      "Plan-Output": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "Plan",
+            "title": "Content Type",
+            "default": "Plan"
+          },
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "steps": {
+            "items": {
+              "$ref": "#/components/schemas/Step-Output"
+            },
+            "type": "array",
+            "title": "Steps"
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "steps"
+        ],
+        "title": "Plan",
+        "description": "Plan."
+      },
+      "Point": {
+        "prefixItems": [
+          {
+            "type": "number"
+          },
+          {
+            "type": "number"
+          }
+        ],
+        "type": "array",
+        "maxItems": 2,
+        "minItems": 2
+      },
+      "ProgressUpdate": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "ProgressUpdate",
+            "title": "Content Type",
+            "default": "ProgressUpdate"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          }
+        },
+        "type": "object",
+        "required": [
+          "title"
+        ],
+        "title": "ProgressUpdate",
+        "description": "Progress update."
+      },
+      "Step-Input": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "in_progress",
+              "success",
+              "failure",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "outcome_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome Summary"
+          },
+          "progress_updates": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ProgressUpdate"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Progress Updates"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StepDetails-Input"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "status"
+        ],
+        "title": "Step",
+        "description": "A step inside a plan."
+      },
+      "Step-Output": {
+        "properties": {
+          "id": {
+            "type": "string",
+            "title": "Id"
+          },
+          "title": {
+            "type": "string",
+            "title": "Title"
+          },
+          "status": {
+            "type": "string",
+            "enum": [
+              "pending",
+              "in_progress",
+              "success",
+              "failure",
+              "cancelled"
+            ],
+            "title": "Status"
+          },
+          "outcome_summary": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Outcome Summary"
+          },
+          "progress_updates": {
+            "anyOf": [
+              {
+                "items": {
+                  "$ref": "#/components/schemas/ProgressUpdate"
+                },
+                "type": "array"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Progress Updates"
+          },
+          "details": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/StepDetails-Output"
+              },
+              {
+                "type": "null"
+              }
+            ]
+          }
+        },
+        "type": "object",
+        "required": [
+          "id",
+          "title",
+          "status"
+        ],
+        "title": "Step",
+        "description": "A step inside a plan."
+      },
+      "StepDetails-Input": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "StepDetails",
+            "title": "Content Type",
+            "default": "StepDetails"
+          },
+          "content": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DatasetSearchDetails"
+              },
+              {
+                "$ref": "#/components/schemas/DataAnalysisDetails-Input"
+              }
+            ],
+            "title": "Content",
+            "discriminator": {
+              "propertyName": "content_type",
+              "mapping": {
+                "DataAnalysisDetails": "#/components/schemas/DataAnalysisDetails-Input",
+                "DatasetSearchDetails": "#/components/schemas/DatasetSearchDetails"
+              }
+            }
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "StepDetails",
+        "description": "Details of a step."
+      },
+      "StepDetails-Output": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "StepDetails",
+            "title": "Content Type",
+            "default": "StepDetails"
+          },
+          "content": {
+            "oneOf": [
+              {
+                "$ref": "#/components/schemas/DatasetSearchDetails"
+              },
+              {
+                "$ref": "#/components/schemas/DataAnalysisDetails-Output"
+              }
+            ],
+            "title": "Content",
+            "discriminator": {
+              "propertyName": "content_type",
+              "mapping": {
+                "DataAnalysisDetails": "#/components/schemas/DataAnalysisDetails-Output",
+                "DatasetSearchDetails": "#/components/schemas/DatasetSearchDetails"
+              }
+            }
+          }
+        },
+        "type": "object",
+        "required": [
+          "content"
+        ],
+        "title": "StepDetails",
+        "description": "Details of a step."
+      },
+      "Text": {
+        "properties": {
+          "text": {
+            "type": "string",
+            "title": "Text"
+          },
+          "content_type": {
+            "type": "string",
+            "const": "Text",
+            "title": "Content Type",
+            "default": "Text"
+          }
+        },
+        "additionalProperties": false,
+        "type": "object",
+        "required": [
+          "text"
+        ],
+        "title": "Text",
+        "description": "Text response from the LLM."
+      },
+      "UIState": {
+        "properties": {
+          "aoi": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Aoi",
+            "description": "AOI URI or geometry."
+          }
+        },
+        "type": "object",
+        "title": "UIState",
+        "description": "UI state."
+      },
+      "UserCreateRequest": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id"
+        ],
+        "title": "UserCreateRequest",
+        "description": "Request model for creating a new user."
+      },
+      "UserResponse": {
+        "properties": {
+          "user_id": {
+            "type": "string",
+            "title": "User Id"
+          },
+          "chat_ids": {
+            "items": {
+              "type": "string"
+            },
+            "type": "array",
+            "title": "Chat Ids"
+          }
+        },
+        "type": "object",
+        "required": [
+          "user_id",
+          "chat_ids"
+        ],
+        "title": "UserResponse",
+        "description": "Response model for user with their chat IDs."
+      },
+      "ValidationError": {
+        "properties": {
+          "loc": {
+            "items": {
+              "anyOf": [
+                {
+                  "type": "string"
+                },
+                {
+                  "type": "integer"
+                }
+              ]
+            },
+            "type": "array",
+            "title": "Location"
+          },
+          "msg": {
+            "type": "string",
+            "title": "Message"
+          },
+          "type": {
+            "type": "string",
+            "title": "Error Type"
+          }
+        },
+        "type": "object",
+        "required": [
+          "loc",
+          "msg",
+          "type"
+        ],
+        "title": "ValidationError"
+      },
+      "Variable": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "type": {
+            "type": "string",
+            "title": "Type"
+          },
+          "description": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "type"
+        ],
+        "title": "Variable",
+        "description": "A variable used in data analysis."
+      }
+    }
+  }
+}

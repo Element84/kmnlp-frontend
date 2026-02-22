@@ -1,0 +1,8 @@
+// Minimal custom styles for focus states not covered by USWDS utilities
+.area-of-interest-pill {
+  button:focus {
+    outline: 2px solid #FFFFFF;
+    outline-offset: 2px;
+    border-radius: 2px;
+  }
+}

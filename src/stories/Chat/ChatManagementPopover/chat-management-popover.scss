@@ -1,0 +1,172 @@
+@use "../../../NOAA-theme.scss" as *;
+
+.chat-management-popover {
+  &__backdrop {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    background: rgba(0, 0, 0, 0.4);
+    z-index: 1000;
+    display: flex;
+    align-items: flex-start;
+    justify-content: flex-start;
+    padding: 0;
+  }
+
+  position: relative;
+  width: 400px; // Wider to cover more of left portion
+  height: 100vh; // Full height
+  background: $theme-color-white;
+  border: none; // Remove border for full-height panel
+  border-radius: 0; // Remove border radius for panel style
+  box-shadow: 4px 0 12px rgba(0, 0, 0, 0.15); // Shadow only on right side
+  margin: 0; // No margin - align to left edge
+  display: flex;
+  flex-direction: column;
+  overflow: hidden;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    padding: 16px;
+    border-bottom: 1px solid $theme-color-base-lighter;
+    background: $theme-color-base-lightest;
+  }
+
+  &__noaa-logo {
+    display: flex;
+    align-items: center;
+  }
+
+  &__noaa-text {
+    font-weight: 700;
+    font-size: 18px;
+    color: $theme-color-primary-darker;
+    letter-spacing: 0.5px;
+  }
+
+  &__close {
+    background: none;
+    border: none;
+    font-size: 20px;
+    cursor: pointer;
+    color: $theme-color-base-dark;
+    padding: 4px 8px;
+    border-radius: 4px;
+    transition: background-color 0.2s ease;
+
+    &:hover {
+      background: $theme-color-base-lighter;
+    }
+  }
+
+  &__content {
+    flex: 1;
+    overflow-y: auto;
+    padding: 16px;
+  }
+
+  &__new-chat-section {
+    margin-bottom: 24px;
+  }
+
+  &__new-chat {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    width: 100%;
+    padding: 12px 8px;
+    border: 0px;
+    background: $theme-color-white;
+    color: $theme-color-primary;
+    border-radius: 6px;
+    cursor: pointer;
+    font-weight: 600;
+    font-size: 14px;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $theme-color-primary-lighter;
+      border-color: $theme-color-primary-dark;
+    }
+  }
+
+  &__plus-icon {
+    font-size: 16px;
+    line-height: 1;
+    font-weight: bold;
+  }
+
+  &__recents-section {
+    display: flex;
+    flex-direction: column;
+  }
+
+  &__recents-title {
+    font-size: 14px;
+    font-weight: 600;
+    color: $theme-color-base-darkest;
+    margin: 0 0 12px 0;
+    padding-bottom: 4px;
+    border-bottom: 1px solid $theme-color-base-lighter;
+  }
+
+  &__recents-list {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+  }
+
+  &__recent-chat {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-start;
+    width: 100%;
+    padding: 12px;
+    border: 1px solid $theme-color-base-lighter;
+    background: $theme-color-white;
+    border-radius: 4px;
+    cursor: pointer;
+    text-align: left;
+    transition: all 0.2s ease;
+
+    &:hover {
+      background: $theme-color-base-lightest;
+      border-color: $theme-color-primary-light;
+    }
+
+    &:focus {
+      outline: 2px solid $theme-color-primary;
+      outline-offset: 2px;
+    }
+  }
+
+  &__chat-title {
+    font-size: 13px;
+    color: $theme-color-base-darkest;
+    line-height: 1.4;
+    margin-bottom: 2px;
+  }
+
+  &__chat-time {
+    font-size: 11px;
+    color: $theme-color-base-dark;
+    opacity: 0.8;
+  }
+}
+
+// Responsive behavior
+@media (max-width: 768px) {
+  .chat-management-popover {
+    width: 280px; // Narrower on mobile but still left-aligned
+
+    &__backdrop {
+      // Keep left alignment on mobile too
+      align-items: flex-start;
+      justify-content: flex-start;
+    }
+  }
+}
