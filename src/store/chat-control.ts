@@ -7,6 +7,7 @@ import {
   chatLoadingStateAtom,
   chatErrorStateAtom,
 } from "./atoms";
+import { applyTerminalState } from "./chat-message-utils";
 
 export const cancelRequestAtom = atom(null, (get, set) => {
   // Cancel the API request
@@ -22,17 +23,18 @@ export const cancelRequestAtom = atom(null, (get, set) => {
     shouldShowLoadingIndicator: false,
   });
 
-  // Add a system message indicating cancellation
+  // Mark any active process steps as cancelled and finalize in-progress
+  // streamed text, then append a system message indicating cancellation.
+  const currentMessages = applyTerminalState(get(chatMessagesAtom), "cancelled");
   const cancelMessage: ChatMessage = {
     id: `cancel-${Date.now()}`,
     text: "Request cancelled by user",
     type: "system",
     timestamp: new Date(),
   };
-  const currentMessages = get(chatMessagesAtom);
   set(chatMessagesAtom, [...currentMessages, cancelMessage]);
 });
 
-export const clearChatErrorAtom = atom(null, (get, set) => {
+export const clearChatErrorAtom = atom(null, (_get, set) => {
   set(chatErrorStateAtom, undefined);
 });

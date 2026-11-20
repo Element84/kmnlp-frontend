@@ -9,12 +9,14 @@ vi.mock("../../../hooks/useChatManagement");
 
 // Mock MapContainer to avoid MapLibre dependencies in tests
 vi.mock("../../Map/MapContainer/MapContainer", () => ({
-  MapContainer: ({ geoJsonData, cogInfo, viewport }: any) => (
+  MapContainer: ({ geoJsonLayers, cogInfos, viewport }: any) => (
     <div data-testid="map-container">
       <div data-testid="geojson-data">
-        {geoJsonData ? "Has Data" : "No Data"}
+        {geoJsonLayers?.length ? "Has Data" : "No Data"}
       </div>
-      <div data-testid="cog-info">{cogInfo ? "Has COG" : "No COG"}</div>
+      <div data-testid="cog-info">
+        {cogInfos?.length ? "Has COG" : "No COG"}
+      </div>
       <div data-testid="map-viewport">{JSON.stringify(viewport)}</div>
     </div>
   ),
@@ -79,7 +81,7 @@ describe("App - Map Data Clearing", () => {
       isLoading: false,
       isInitializing: false,
       currentChatId: null,
-      cogInfo: undefined,
+      cogInfos: [],
       sendMessage: vi.fn(),
       startNewChat: vi.fn(),
       resetToNewChat: vi.fn(),
@@ -167,7 +169,7 @@ describe("App - Map Data Clearing", () => {
       isLoading: false,
       isInitializing: false,
       currentChatId: "chat-1",
-      cogInfo: undefined,
+      cogInfos: [],
       sendMessage: vi.fn(),
       startNewChat: vi.fn(),
       resetToNewChat: vi.fn(),
@@ -190,7 +192,7 @@ describe("App - Map Data Clearing", () => {
       isLoading: false,
       isInitializing: false,
       currentChatId: "chat-2",
-      cogInfo: undefined,
+      cogInfos: [],
       sendMessage: vi.fn(),
       startNewChat: vi.fn(),
       resetToNewChat: vi.fn(),
@@ -210,7 +212,7 @@ describe("App - Map Data Clearing", () => {
     expect(mockLoadChat).toHaveBeenCalledWith("chat-2");
   });
 
-  it.skip("should clear cogInfo when switching chats", async () => {
+  it.skip("should clear cogInfos when switching chats", async () => {
     const user = userEvent.setup();
 
     const chatWithCOG = {
@@ -242,10 +244,12 @@ describe("App - Map Data Clearing", () => {
       isLoading: false,
       isInitializing: false,
       currentChatId: "cog-chat",
-      cogInfo: {
-        url: "http://example.com/cog.tif",
-        legend: { label: "Test Layer", color_scheme: "viridis" },
-      },
+      cogInfos: [
+        {
+          url: "http://example.com/cog.tif",
+          legend: { label: "Test Layer", color_scheme: "viridis" },
+        },
+      ],
       sendMessage: vi.fn(),
       startNewChat: vi.fn(),
       resetToNewChat: vi.fn(),
@@ -268,7 +272,7 @@ describe("App - Map Data Clearing", () => {
       isLoading: false,
       isInitializing: false,
       currentChatId: "no-cog-chat",
-      cogInfo: undefined,
+      cogInfos: [],
       sendMessage: vi.fn(),
       startNewChat: vi.fn(),
       resetToNewChat: vi.fn(),
@@ -287,8 +291,6 @@ describe("App - Map Data Clearing", () => {
   });
 
   it.skip("should clear map data when starting a new chat", async () => {
-    const user = userEvent.setup();
-
     const mockResetToNewChat = vi.fn();
 
     // Initially show messages with map data
@@ -311,7 +313,7 @@ describe("App - Map Data Clearing", () => {
       isLoading: false,
       isInitializing: false,
       currentChatId: "existing-chat",
-      cogInfo: undefined,
+      cogInfos: [],
       sendMessage: vi.fn(),
       startNewChat: vi.fn(),
       resetToNewChat: mockResetToNewChat,
@@ -340,7 +342,7 @@ describe("App - Map Data Clearing", () => {
       isLoading: false,
       isInitializing: false,
       currentChatId: null,
-      cogInfo: undefined,
+      cogInfos: [],
       sendMessage: vi.fn(),
       startNewChat: vi.fn(),
       resetToNewChat: mockResetToNewChat,
@@ -420,10 +422,12 @@ describe("App - Map Data Clearing", () => {
       isLoading: false,
       isInitializing: false,
       currentChatId: "chat-both",
-      cogInfo: {
-        url: "http://example.com/test.tif",
-        legend: { label: "Temperature", color_scheme: "plasma" },
-      },
+      cogInfos: [
+        {
+          url: "http://example.com/test.tif",
+          legend: { label: "Temperature", color_scheme: "plasma" },
+        },
+      ],
       sendMessage: vi.fn(),
       startNewChat: vi.fn(),
       resetToNewChat: vi.fn(),
@@ -447,7 +451,7 @@ describe("App - Map Data Clearing", () => {
       isLoading: false,
       isInitializing: false,
       currentChatId: "chat-empty",
-      cogInfo: undefined, // COG data cleared
+      cogInfos: [], // COG data cleared
       sendMessage: vi.fn(),
       startNewChat: vi.fn(),
       resetToNewChat: vi.fn(),
@@ -498,7 +502,7 @@ describe("App - Map Data Clearing", () => {
       isLoading: false,
       isInitializing: false,
       currentChatId: "chat-1",
-      cogInfo: undefined,
+      cogInfos: [],
       sendMessage: vi.fn(),
       startNewChat: vi.fn(),
       resetToNewChat: vi.fn(),
@@ -510,7 +514,7 @@ describe("App - Map Data Clearing", () => {
 
     // Verify initial viewport is default
     const initialViewport = JSON.parse(
-      screen.getByTestId("map-viewport").textContent || "{}"
+      screen.getByTestId("map-viewport").textContent || "{}",
     );
     expect(initialViewport).toEqual({
       latitude: 25.0,
@@ -530,7 +534,7 @@ describe("App - Map Data Clearing", () => {
       isLoading: false,
       isInitializing: false,
       currentChatId: "chat-2",
-      cogInfo: undefined,
+      cogInfos: [],
       sendMessage: vi.fn(),
       startNewChat: vi.fn(),
       resetToNewChat: vi.fn(),
@@ -543,7 +547,7 @@ describe("App - Map Data Clearing", () => {
     // Verify viewport is reset to default
     await waitFor(() => {
       const viewport = JSON.parse(
-        screen.getByTestId("map-viewport").textContent || "{}"
+        screen.getByTestId("map-viewport").textContent || "{}",
       );
       expect(viewport).toEqual({
         latitude: 25.0,

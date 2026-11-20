@@ -221,6 +221,4 @@ export const STORY_GROUPS: StoryGroupsConfig = {
   }
 };
 
-type StoryGroupsConfig = {
-  [K in keyof typeof STORY_GROUPS]: StoryScreenshotGroup;
-};
+type StoryGroupsConfig = Record<string, StoryScreenshotGroup>;

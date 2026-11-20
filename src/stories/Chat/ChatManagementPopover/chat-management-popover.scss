@@ -120,6 +120,15 @@
     gap: 4px;
   }
 
+  &__recents-status {
+    padding: 12px;
+    border: 1px dashed $theme-color-base-lighter;
+    border-radius: 4px;
+    font-size: 13px;
+    color: $theme-color-base-dark;
+    background: $theme-color-base-lightest;
+  }
+
   &__recent-chat {
     display: flex;
     flex-direction: column;
@@ -155,6 +164,28 @@
     font-size: 11px;
     color: $theme-color-base-dark;
     opacity: 0.8;
+  }
+
+  &__load-more {
+    margin-top: 8px;
+    padding: 10px 12px;
+    border: 1px solid $theme-color-primary;
+    border-radius: 4px;
+    background: $theme-color-white;
+    color: $theme-color-primary;
+    font-size: 13px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: background-color 0.2s ease;
+
+    &:hover:enabled {
+      background: $theme-color-primary-lighter;
+    }
+
+    &:disabled {
+      opacity: 0.65;
+      cursor: not-allowed;
+    }
   }
 }
 

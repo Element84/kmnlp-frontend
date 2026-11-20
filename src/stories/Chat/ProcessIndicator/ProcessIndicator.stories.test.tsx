@@ -138,7 +138,7 @@ describe('ProcessIndicator Stories', () => {
         LongSteps,
       ];
 
-      allStories.forEach((Story, index) => {
+      allStories.forEach((Story) => {
         const { unmount } = render(<Story />);
         
         // Each story should render a process indicator

@@ -98,14 +98,14 @@ export const initializeUserSessionAtom = atom(
  */
 export const getUserChatsAtom = atom(
   null,
-  async (get, set): Promise<ChatHeader[]> => {
+  async (get, _set, offset: number = 0): Promise<ChatHeader[]> => {
     const sessionState = get(userSessionStateAtom);
     
     if (!sessionState.currentUserId) {
       throw new Error('User session not initialized');
     }
     
-    return apiClient.getUserChats();
+    return apiClient.getUserChats(offset);
   }
 );
 
@@ -114,7 +114,7 @@ export const getUserChatsAtom = atom(
  */
 export const clearUserSessionAtom = atom(
   null,
-  (get, set) => {
+  (_get, set) => {
     set(userSessionStateAtom, {
       currentUserId: null,
       isInitializing: true,
@@ -131,7 +131,7 @@ export const clearUserSessionAtom = atom(
  */
 export const regenerateUserIdAtom = atom(
   null,
-  async (get, set) => {
+  async (_get, set) => {
     const newUserId = generatePersistentUserId();
     set(userIdAtom, newUserId);
     

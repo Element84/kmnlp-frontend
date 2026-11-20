@@ -5,6 +5,8 @@ import { LocationResult } from "../MapControls/utils/location-search";
 import { Legend, AOISummary } from "../../../types/api";
 
 export interface CogInfo {
+  id?: string;
+  createdAt?: number;
   url: string;
   legend?: Legend;
 }
@@ -14,7 +16,12 @@ export interface MapContainerProps {
   onViewportChange: (viewport: MapViewport) => void;
   onAreaSelect?: (area: AreaOfInterestType) => void;
   onAOIToggle?: () => void;
-  onApplyAOI?: (aoiName: string, isNewAOI: boolean, file?: File, geojson?: any) => void;
+  onApplyAOI?: (
+    aoiName: string,
+    isNewAOI: boolean,
+    file?: File,
+    geojson?: any,
+  ) => void;
   aoiList?: AOISummary[];
   onLoadAOIs?: () => void;
   isLoadingAOIs?: boolean;
@@ -27,10 +34,15 @@ export interface MapContainerProps {
   selectedArea?: AreaOfInterestType | null;
   onBasemapChange?: (basemapType: BasemapType) => void;
   onLocationSelect?: (location: LocationResult) => void;
-  geoJsonData?: any;
+  geoJsonLayers?: Array<{
+    id: string;
+    data: any;
+    createdAt?: number;
+    label?: string;
+  }>;
   geocodeAOI?: any; // Added for test compatibility, expects GeoJSON
-  /** COG file information including URL and legend */
-  cogInfo?: CogInfo;
+  /** COG files to display as independent raster layers */
+  cogInfos: CogInfo[];
 }
 
 export interface MapViewport {

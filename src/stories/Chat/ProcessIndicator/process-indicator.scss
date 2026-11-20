@@ -12,6 +12,7 @@
 
 .process-indicator {
   position: relative;
+  margin-top: 0.5rem;
 
   // Status-specific backgrounds for the status bar
   &--in_progress {
@@ -34,6 +35,11 @@
   &--pending {
     background-color: $theme-color-base-light;
     opacity: 0.9;
+    border-radius: 8px 0 0 8px;
+  }
+
+  &--cancelled {
+    background-color: $theme-color-base-dark;
     border-radius: 8px 0 0 8px;
   }
 

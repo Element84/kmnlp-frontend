@@ -1,13 +1,15 @@
 import { useCallback } from "react";
+import type { RefObject } from "react";
+import type { MapRef } from "react-map-gl/maplibre";
 import { LocationResult } from "../MapControls/utils/location-search";
-import { MapViewport } from "./MapContainer";
+import { MapViewport } from "./types";
 
 // Function to navigate to a location
 export const navigateToLocation = (
-  mapRef,
-  viewport,
-  onViewportChange,
-  onLocationSelect
+  mapRef: RefObject<MapRef>,
+  viewport: MapViewport,
+  onViewportChange: (v: MapViewport) => void,
+  onLocationSelect?: (l: LocationResult) => void
 ) =>
   useCallback(
     (location: LocationResult) => {
@@ -24,7 +26,7 @@ export const navigateToLocation = (
           {
             padding: { top: 50, bottom: 50, left: 50, right: 50 },
             duration: 1000,
-          }
+          },
         );
       } else {
         // Otherwise, fly to coordinates with appropriate zoom
@@ -47,12 +49,11 @@ export const navigateToLocation = (
       }
 
       onLocationSelect?.(location);
-
     },
-    [viewport.pitch, viewport.bearing, onViewportChange, onLocationSelect]
+    [viewport.pitch, viewport.bearing, onViewportChange, onLocationSelect],
   );
 
-export const handleMapLoad = (mapRef) =>
+export const useMapLoadHandler = (mapRef: RefObject<MapRef>) =>
   useCallback(() => {
     if (mapRef.current) {
       const map = mapRef.current.getMap();

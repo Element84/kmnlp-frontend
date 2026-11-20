@@ -35,7 +35,7 @@ export const Open: Story = {
   args: {
     isOpen: true,
     onClose: () => console.log("Modal closed"),
-    onGeoJSONUpload: (data: FeatureCollection, fileName: string) => {
+    onGeoJSONUpload: (_data: FeatureCollection, _fileName: string) => {
       // console.log(`GeoJSON uploaded: ${fileName}`);
       // console.log(`Received ${data.features.length} feature(s)`);
       // console.log("Data:", data);
@@ -47,7 +47,7 @@ export const Closed: Story = {
   args: {
     isOpen: false,
     onClose: () => console.log("Modal closed"),
-    onGeoJSONUpload: (data: FeatureCollection, fileName: string) => 
+    onGeoJSONUpload: (_data: FeatureCollection, fileName: string) =>
       console.log(`GeoJSON uploaded: ${fileName}`),
   },
 };

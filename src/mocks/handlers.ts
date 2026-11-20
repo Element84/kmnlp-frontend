@@ -8,8 +8,6 @@ import type {
   Step,
 } from '../types/api';
 
-const mockUserId = 'mock-user-123';
-
 // Mock chat storage
 const mockChats = new Map<string, Chat>();
 let chatCounter = 1;
@@ -18,7 +16,7 @@ let chatCounter = 1;
 const generateChatId = () => `chat-${chatCounter++}`;
 
 // Helper to create mock plans with steps
-const createMockPlan = (request: ChatRequest): Plan => {
+const createMockPlan = (_request: ChatRequest): Plan => {
   const steps: Step[] = [
     {
       id: 'step-1',
@@ -57,6 +55,33 @@ const simulateStreamingResponse = async function* (request: ChatRequest) {
 
   await delay(1000);
 
+  // Streamed thinking, emitted as ThinkingDelta chunks then a final Thinking
+  const fullThinking = `Let me consider the user's request: "${request.content}".
+I should identify the relevant oceanographic datasets for the Gulf of Mexico.
+Temperature and salinity are the key variables here.
+I'll cross-reference seasonal patterns before summarizing the findings.`;
+  const thinkingChunks = fullThinking.match(/\S+\s*/g) ?? [fullThinking];
+  for (const chunk of thinkingChunks) {
+    yield {
+      content: {
+        content_type: 'ThinkingDelta',
+        content_delta: chunk,
+      },
+      timestamp: new Date().toISOString(),
+    } as ChatResponse;
+    await delay(25);
+  }
+  yield {
+    content: {
+      content_type: 'Thinking',
+      thinking: fullThinking,
+      duration: 4,
+    },
+    timestamp: new Date().toISOString(),
+  } as ChatResponse;
+
+  await delay(500);
+
   // Update plan - step 2 completes, step 3 starts
   const updatedPlan: Plan = {
     ...plan,
@@ -71,6 +96,17 @@ const simulateStreamingResponse = async function* (request: ChatRequest) {
 
   yield {
     content: updatedPlan,
+    timestamp: new Date().toISOString(),
+  } as ChatResponse;
+
+  await delay(400);
+
+  // Top-level progress narration
+  yield {
+    content: {
+      content_type: 'ProgressUpdate',
+      title: '🖼️ Viewing image: gulf_temperature_anomaly.png',
+    },
     timestamp: new Date().toISOString(),
   } as ChatResponse;
 
@@ -93,11 +129,8 @@ const simulateStreamingResponse = async function* (request: ChatRequest) {
 
   await delay(500);
 
-  // Text response
-  yield {
-    content: {
-      content_type: 'Text',
-      text: `Based on your query "${request.content}", I found comprehensive oceanographic data for the Gulf of Mexico region. The data shows interesting temperature and salinity patterns, particularly in the northern Gulf where freshwater from the Mississippi River creates distinct layered water masses.
+  // Streamed text response, emitted as TextDelta chunks
+  const fullText = `Based on your query "${request.content}", I found comprehensive oceanographic data for the Gulf of Mexico region. The data shows interesting temperature and salinity patterns, particularly in the northern Gulf where freshwater from the Mississippi River creates distinct layered water masses.
 
 Key findings:
 • Surface temperatures range from 26-29°C during summer months
@@ -105,7 +138,26 @@ Key findings:
 • Current patterns indicate strong Loop Current influence
 • Biological productivity peaks occur in spring and fall
 
-${request.ui_state?.aoi ? 'Your selected area of interest has been incorporated into this analysis.' : 'Consider selecting an area of interest on the map for more targeted analysis.'}`,
+${request.ui_state?.aoi ? 'Your selected area of interest has been incorporated into this analysis.' : 'Consider selecting an area of interest on the map for more targeted analysis.'}`;
+
+  // Split into word chunks to simulate token streaming
+  const chunks = fullText.match(/\S+\s*/g) ?? [fullText];
+  for (const chunk of chunks) {
+    yield {
+      content: {
+        content_type: 'TextDelta',
+        content_delta: chunk,
+      },
+      timestamp: new Date().toISOString(),
+    } as ChatResponse;
+    await delay(20);
+  }
+
+  // Final, fully-formed Text payload (authoritative full text)
+  yield {
+    content: {
+      content_type: 'Text',
+      text: fullText,
     },
     timestamp: new Date().toISOString(),
   } as ChatResponse;
@@ -151,6 +203,10 @@ export const handlers = [
       );
     }
 
+    const url = new URL(request.url);
+    const offsetParam = Number.parseInt(url.searchParams.get('offset') ?? '0', 10);
+    const offset = Number.isNaN(offsetParam) || offsetParam < 0 ? 0 : offsetParam;
+
     // Return list of ChatHeader objects for this user
     const mockChatHeaders: ChatHeader[] = [
       {
@@ -170,7 +226,7 @@ export const handlers = [
       }
     ];
 
-    return HttpResponse.json(mockChatHeaders);
+    return HttpResponse.json(mockChatHeaders.slice(offset, offset + 25));
   }),
 
   // Start new chat
@@ -269,5 +325,23 @@ export const handlers = [
         'Content-Type': 'application/x-ndjson',
       },
     });
+  }),
+
+  // Get available system models
+  http.get('*/system/models', async () => {
+    await delay(300);
+
+    return HttpResponse.json([
+      {
+        name: 'NOAA Climate Model',
+        description:
+          'Used for long-range climate projections and analyzing multi-decadal environmental trends across ocean and atmosphere datasets.',
+      },
+      {
+        name: 'Coastal Flood Model',
+        description:
+          'Used to estimate storm surge and coastal inundation risk from historical and forecasted weather events.',
+      },
+    ]);
   }),
 ];

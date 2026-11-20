@@ -4,10 +4,7 @@ import { AreaOfInterestProps } from "./types";
 
 export const AreaOfInterest: React.FC<AreaOfInterestProps> = ({
   isActive,
-  onAreaComplete,
   onCancel,
-  currentArea,
-  className = ""
 }) => {
   // Handle keyboard shortcuts
   const handleKeyDown = useCallback((event: KeyboardEvent) => {

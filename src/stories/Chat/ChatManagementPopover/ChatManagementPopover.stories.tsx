@@ -128,7 +128,7 @@ export const Interactive: Story = {
       setIsVisible(false);
     };
     
-    const handleSelectChat = (chatId: string) => {
+    const handleSelectChat = (_chatId: string) => {
       setIsVisible(false);
     };
     

@@ -26,8 +26,11 @@ export const calculateViewportFromBounds = (
 
   const [minLng, minLat, maxLng, maxLat] = bounds;
 
-  // Calculate center point
-  const centerLng = (minLng + maxLng) / 2;
+  // Calculate center point. Longitude bounds may be "unwrapped" (maxLng > 180)
+  // for anti-meridian-crossing geometries, so normalize the center back into
+  // [-180, 180].
+  const rawCenterLng = (minLng + maxLng) / 2;
+  const centerLng = ((((rawCenterLng + 180) % 360) + 360) % 360) - 180;
   const centerLat = (minLat + maxLat) / 2;
 
   // Calculate extent ranges

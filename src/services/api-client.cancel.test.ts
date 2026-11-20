@@ -58,7 +58,7 @@ describe('ApiClient - Request Cancellation', () => {
     });
 
     let capturedAbortSignal: AbortSignal | undefined;
-    global.fetch = vi.fn().mockImplementation((url, options) => {
+    global.fetch = vi.fn().mockImplementation((_url, options) => {
       capturedAbortSignal = options?.signal;
       return Promise.resolve({
         ok: true,
@@ -103,14 +103,14 @@ describe('ApiClient - Request Cancellation', () => {
     let secondAbortSignal: AbortSignal | undefined;
 
     global.fetch = vi.fn()
-      .mockImplementationOnce((url, options) => {
+      .mockImplementationOnce((_url, options) => {
         firstAbortSignal = options?.signal;
         return Promise.resolve({
           ok: true,
           body: mockStream,
         });
       })
-      .mockImplementationOnce((url, options) => {
+      .mockImplementationOnce((_url, options) => {
         secondAbortSignal = options?.signal;
         return Promise.resolve({
           ok: true,

@@ -1,4 +1,3 @@
-import React from 'react';
 import './viewport-warning.scss';
 
 export interface ViewportWarningProps {

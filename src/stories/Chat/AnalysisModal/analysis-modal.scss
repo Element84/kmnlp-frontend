@@ -1,11 +1,35 @@
 
 
+@use "../../../NOAA-theme.scss" as *;
+
 .analysis-modal__copy-button {
-  transition: background-color 0.2s ease;
+  position: absolute;
+  top: 15px;
+  right: 30px;
+  z-index: 1;
+  padding: 4px;
+  border-radius: 4px;
+  color: #565c65;
+  opacity: 0.6;
+  transition: opacity 0.15s ease, background-color 0.15s ease;
+  cursor: pointer;
 
   &:hover {
-    background-color: rgba(255, 255, 255, 0.1);
+    opacity: 1;
+    background-color: rgba(0, 0, 0, 0.05);
   }
+}
+
+.analysis-modal__copy-tooltip {
+  position: absolute;
+  top: -24px;
+  right: 0;
+  font-size: 0.7rem;
+  background: #1b1b1b;
+  color: #fff;
+  padding: 2px 6px;
+  border-radius: 3px;
+  white-space: nowrap;
 }
 
 @keyframes modalFadeIn {
@@ -21,6 +45,84 @@
 
 .analysis-modal__container {
   animation: modalFadeIn 0.2s ease-out;
+}
+
+.analysis-modal__see-more {
+  all: unset;
+  font-size: 0.75rem;
+  color: #565c65;
+  cursor: pointer;
+  text-decoration: underline;
+  margin-top: 2px;
+  display: inline-block;
+
+  &:hover {
+    color: #1b1b1b;
+  }
+}
+
+.analysis-modal__download-link {
+  all: unset;
+  color: #0050d8;
+  cursor: pointer;
+  text-decoration: underline;
+  display: inline-block;
+
+  &:hover {
+    color: #1b1b1b;
+  }
+
+  &:disabled {
+    color: #565c65;
+    cursor: default;
+    text-decoration: none;
+  }
+}
+
+.analysis-modal__download-error {
+  color: #b50909;
+  font-size: 0.75rem;
+}
+
+.analysis-modal__section-toggle {
+  all: unset;
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  width: 100%;
+  box-sizing: border-box;
+  padding: 10px 12px;
+  cursor: pointer;
+  border-radius: 7px 7px 0 0;
+  background-color: $theme-color-base-lightest;
+  transition: background-color 0.15s ease;
+
+  &:hover {
+    background-color: $theme-color-base-lighter;
+  }
+
+  &:focus-visible {
+    outline: 2px solid $theme-focus-color;
+    outline-offset: -2px;
+  }
+}
+
+.analysis-modal__section-body {
+  padding: 12px;
+  border-top: 1px solid $theme-color-base-lighter;
+  background-color: $theme-color-white;
+  border-radius: 0 0 7px 7px;
+}
+
+.analysis-modal__section-chevron {
+  font-size: 10px;
+  color: #565c65;
+  transition: transform 0.2s ease;
+  flex-shrink: 0;
+
+  &--open {
+    transform: rotate(90deg);
+  }
 }
 
 

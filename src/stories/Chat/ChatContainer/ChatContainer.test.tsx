@@ -85,7 +85,7 @@ describe('ChatContainer - Image Rendering', () => {
     const { getByRole } = render(<ChatContainer messages={[imageMessage]} />);
 
     const image = getByRole('img');
-    expect(image).toHaveStyle({ maxWidth: '100%', height: 'auto' });
+    expect(image).toHaveClass('height-auto', 'width-full');
   });
 
   it('should render message timestamp for image messages', () => {

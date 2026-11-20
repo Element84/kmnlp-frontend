@@ -3,10 +3,6 @@ import "./header.scss";
 import { Header } from "@trussworks/react-uswds";
 import { NOAAButton } from "../Button/Button";
 
-type User = {
-  name: string;
-};
-
 export interface HeaderProps {
   logoLink?: string;
   /** Callback when Map View button is clicked */

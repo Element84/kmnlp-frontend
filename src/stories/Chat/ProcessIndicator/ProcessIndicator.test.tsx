@@ -1,5 +1,5 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
-import { render, screen, fireEvent, waitFor } from '@testing-library/react';
+import { render, screen, waitFor } from '@testing-library/react';
 import userEvent from '@testing-library/user-event';
 import { ProcessIndicator, ProcessIndicatorProps, ProcessStepData } from './ProcessIndicator';
 
@@ -76,7 +76,7 @@ describe('ProcessIndicator', () => {
       const statuses: Array<ProcessIndicatorProps['status']> = ['pending', 'in_progress', 'completed', 'failed'];
       
       statuses.forEach((status) => {
-        const { rerender, unmount } = render(<ProcessIndicator {...defaultProps} status={status} />);
+        const { unmount } = render(<ProcessIndicator {...defaultProps} status={status} />);
         const expectedText = status === 'in_progress' ? 'In Progress' : 
                            status.charAt(0).toUpperCase() + status.slice(1);
         expect(screen.getByText(new RegExp(expectedText), { selector: 'h4' })).toBeInTheDocument();
@@ -198,7 +198,7 @@ describe('ProcessIndicator', () => {
         const stepElement = screen.getByTestId(`process-step-${index}`);
         expect(stepElement).toBeInTheDocument();
         
-        expect(screen.getByText(step.text)).toBeInTheDocument();
+        expect(screen.getByText(step.text!)).toBeInTheDocument();
       });
     });
 

@@ -70,7 +70,7 @@ export const Interactive: Story = {
     isProcessing: false,
     disabled: false,
   },
-  play: async ({ canvasElement }) => {
+  play: async () => {
     // This story can be used to test interactive behavior
   },
 };

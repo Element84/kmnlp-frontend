@@ -16,6 +16,14 @@ export interface ChatManagementPopoverProps {
   onNewChat?: () => void;
   /** Callback when a chat is selected from history */
   onSelectChat?: (chatId: string) => void;
+  /** Callback to fetch older chats using offset pagination */
+  onLoadMoreChats?: () => void;
+  /** Whether additional chat pages are available */
+  hasMoreChats?: boolean;
+  /** Whether an additional page is currently loading */
+  isLoadingMoreChats?: boolean;
+  /** Whether the initial chat list is currently loading */
+  isLoadingChats?: boolean;
   /** Array of recent chat conversations */
   recentChats?: ChatHistory[];
 }
@@ -29,10 +37,26 @@ export const ChatManagementPopover = ({
   onClose,
   onNewChat,
   onSelectChat,
+  onLoadMoreChats,
+  hasMoreChats = false,
+  isLoadingMoreChats = false,
+  isLoadingChats = false,
   recentChats = [
-    { id: "1", title: "Previous Chat 1 - Lorem Ipsum", lastActivity: new Date('2024-10-29T10:30:00Z') },
-    { id: "2", title: "Previous Chat 2 - Lorem Ipsum", lastActivity: new Date('2024-10-28T14:15:00Z') },
-    { id: "3", title: "Previous Chat 3 - Lorem Ipsum", lastActivity: new Date('2024-10-27T09:45:00Z') },
+    {
+      id: "1",
+      title: "Previous Chat 1 - Lorem Ipsum",
+      lastActivity: new Date("2024-10-29T10:30:00Z"),
+    },
+    {
+      id: "2",
+      title: "Previous Chat 2 - Lorem Ipsum",
+      lastActivity: new Date("2024-10-28T14:15:00Z"),
+    },
+    {
+      id: "3",
+      title: "Previous Chat 3 - Lorem Ipsum",
+      lastActivity: new Date("2024-10-27T09:45:00Z"),
+    },
   ],
 }: ChatManagementPopoverProps) => {
   const handleBackdropClick = (e: React.MouseEvent) => {
@@ -151,6 +175,18 @@ export const ChatManagementPopover = ({
           <div className="chat-management-popover__recents-section">
             <h3 className="chat-management-popover__recents-title">Recents</h3>
             <div className="chat-management-popover__recents-list">
+              {isLoadingChats && recentChats.length === 0 && (
+                <div className="chat-management-popover__recents-status">
+                  Loading chats...
+                </div>
+              )}
+
+              {!isLoadingChats && recentChats.length === 0 && (
+                <div className="chat-management-popover__recents-status">
+                  No recent chats yet.
+                </div>
+              )}
+
               {recentChats.map((chat) => (
                 <button
                   key={chat.id}
@@ -170,6 +206,16 @@ export const ChatManagementPopover = ({
                   )}
                 </button>
               ))}
+
+              {(hasMoreChats || isLoadingMoreChats) && (
+                <button
+                  className="chat-management-popover__load-more"
+                  onClick={onLoadMoreChats}
+                  disabled={isLoadingMoreChats}
+                >
+                  {isLoadingMoreChats ? "Loading more..." : "Load more"}
+                </button>
+              )}
             </div>
           </div>
         </div>

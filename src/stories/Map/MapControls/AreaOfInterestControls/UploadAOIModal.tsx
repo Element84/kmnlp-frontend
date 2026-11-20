@@ -1,5 +1,5 @@
 import React, { useState, useRef, useEffect, DragEvent } from "react";
-import { Button, Icon, Alert } from "@trussworks/react-uswds";
+import { Icon, Alert } from "@trussworks/react-uswds";
 import type { FeatureCollection } from "geojson";
 import { parseGeoJSONFile, isValidFileType, validateGeometryForMapping } from "../utils/upload-geojson";
 import "./upload-aoi-modal.scss";

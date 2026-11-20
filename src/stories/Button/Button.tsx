@@ -16,7 +16,6 @@ export const NOAAButton = ({
   label,
   onClick,
   isMapOpen = false,
-  ...props
 }: ButtonProps) => {
   return (
     <Button

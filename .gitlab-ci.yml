@@ -9,6 +9,7 @@ before_script:
     fi
 
 stages:
+  - check
   - build
   - deploy
 
@@ -22,6 +23,19 @@ cache:
   paths:
     - .yarn-cache/
     - node_modules/
+
+# Type-check the app (non-blocking): reports tsc errors without failing the pipeline.
+typecheck:
+  stage: check
+  image: node:20
+  before_script:
+    - corepack enable
+    - yarn install --immutable
+  script:
+    - yarn typecheck
+  allow_failure: true
+  rules:
+    - if: $CI_COMMIT_BRANCH
 
 # Build environment-agnostic artifact
 build:

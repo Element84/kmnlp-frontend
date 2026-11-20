@@ -94,7 +94,7 @@ describe('ChatStreamHandler - Stream Cancellation', () => {
 
   it('Test 4: should handle errors during cancellation gracefully', async () => {
     const stream = new ReadableStream({
-      start(controller) {
+      start(_controller) {
         // Keep stream open
       },
     });
@@ -102,7 +102,7 @@ describe('ChatStreamHandler - Stream Cancellation', () => {
     const handlerAny = handler as any;
 
     // Start processing
-    const processPromise = handler.processStream(stream, {});
+    handler.processStream(stream, {});
     
     await new Promise((resolve) => setTimeout(resolve, 10));
 
@@ -127,8 +127,8 @@ describe('ChatStreamHandler - Stream Cancellation', () => {
     // First stream - complete successfully
     const mockResponse1: ChatResponse = {
       content: {
-        content_type: 'Text',
-        text: 'Hello World',
+        content_type: 'TextDelta',
+        content_delta: 'Hello World',
       },
       timestamp: new Date().toISOString(),
     };

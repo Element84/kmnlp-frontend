@@ -16,9 +16,10 @@ const meta: Meta<typeof MainLayout> = {
   },
   tags: ['autodocs'],
   argTypes: {
-    chatViewCollapsed: {
-      control: 'boolean',
-      description: 'Whether the chat view is collapsed',
+    viewState: {
+      control: 'select',
+      options: ['expanded', 'map-maximized', 'map-hidden'],
+      description: 'Current view/layout state',
     },
     managementVisible: {
       control: 'boolean',
@@ -26,7 +27,7 @@ const meta: Meta<typeof MainLayout> = {
     },
   },
   args: {
-    onToggleChatView: fn(),
+    onViewStateChange: fn(),
     onToggleManagement: fn(),
     onNewChat: fn(),
     onSelectChat: fn(),
@@ -112,7 +113,7 @@ const mockMapContent = (
  */
 export const Default: Story = {
   args: {
-    chatViewCollapsed: false,
+    viewState: 'expanded',
     managementVisible: false,
     chatContent: mockChatContent,
     mapContent: mockMapContent,
@@ -125,7 +126,7 @@ export const Default: Story = {
  */
 export const ChatCollapsed: Story = {
   args: {
-    chatViewCollapsed: true,
+    viewState: 'map-maximized',
     managementVisible: false,
     chatContent: mockChatContent,
     mapContent: mockMapContent,
@@ -138,7 +139,7 @@ export const ChatCollapsed: Story = {
  */
 export const ManagementVisible: Story = {
   args: {
-    chatViewCollapsed: false,
+    viewState: 'expanded',
     managementVisible: true,
     chatContent: mockChatContent,
     mapContent: mockMapContent,
@@ -151,7 +152,7 @@ export const ManagementVisible: Story = {
  */
 export const ChatCollapsedWithManagement: Story = {
   args: {
-    chatViewCollapsed: true,
+    viewState: 'map-maximized',
     managementVisible: true,
     chatContent: mockChatContent,
     mapContent: mockMapContent,
@@ -239,12 +240,12 @@ export const Interactive: Story = {
     
     return (
       <MainLayout
-        chatViewCollapsed={chatViewCollapsed}
+        viewState={chatViewCollapsed ? "map-maximized" : "expanded"}
         managementVisible={managementVisible}
         chatContent={dynamicChatContent}
         mapContent={dynamicMapContent}
         recentChats={sampleChats}
-        onToggleChatView={() => setChatViewCollapsed(!chatViewCollapsed)}
+        onViewStateChange={() => setChatViewCollapsed(!chatViewCollapsed)}
         onToggleManagement={() => setManagementVisible(!managementVisible)}
         onNewChat={handleNewChat}
         onSelectChat={handleSelectChat}
@@ -260,7 +261,7 @@ export const Interactive: Story = {
  */
 export const EmptyState: Story = {
   args: {
-    chatViewCollapsed: false,
+    viewState: 'expanded',
     managementVisible: false,
     chatContent: (
       <div style={{ 

@@ -21,6 +21,10 @@ export interface MainLayoutProps {
   onToggleManagement?: () => void;
   onNewChat?: () => void;
   onSelectChat?: (chatId: string) => void;
+  onLoadMoreChats?: () => void;
+  hasMoreChats?: boolean;
+  isLoadingMoreChats?: boolean;
+  isLoadingChats?: boolean;
   onSelectAOI?: () => void;
   onRemoveAOI?: () => void;
   onSubmit?: (message: string) => void;
@@ -38,6 +42,10 @@ export const MainLayout = ({
   onToggleManagement,
   onNewChat,
   onSelectChat,
+  onLoadMoreChats,
+  hasMoreChats = false,
+  isLoadingMoreChats = false,
+  isLoadingChats = false,
   onSelectAOI,
   onRemoveAOI,
   onSubmit,
@@ -88,6 +96,10 @@ export const MainLayout = ({
         onNewChat={onNewChat}
         onSelectChat={onSelectChat}
         recentChats={recentChats}
+        onLoadMoreChats={onLoadMoreChats}
+        hasMoreChats={hasMoreChats}
+        isLoadingMoreChats={isLoadingMoreChats}
+        isLoadingChats={isLoadingChats}
       />
     </div>
   );

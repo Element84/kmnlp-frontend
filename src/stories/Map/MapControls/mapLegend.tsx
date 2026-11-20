@@ -5,7 +5,6 @@ import {
   LegendGradient,
   LegendTable,
   LegendTableItem,
-  LegendGradientProps,
 } from "./LegendContents";
 import { Icon } from "@trussworks/react-uswds";
 

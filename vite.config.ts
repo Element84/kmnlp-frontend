@@ -18,7 +18,14 @@ export default defineConfig({
     preprocessorOptions: {
       scss: {
         api: "legacy",
-        silenceDeprecations: ["legacy-js-api", "global-builtin", "mixed-decls"],
+        // USWDS's own SCSS triggers Dart Sass deprecations (@import, if(), /-division,
+        // deprecated settings/mixins). quietDeps silences warnings from dependencies
+        // (node_modules) so only issues in our own SCSS surface.
+        quietDeps: true,
+        // NOTE: "mixed-decls" was intentionally dropped — that deprecation is now
+        // obsolete in the current Dart Sass, and silencing an obsolete id emits its
+        // own warning.
+        silenceDeprecations: ["legacy-js-api", "global-builtin"],
         includePaths: [
           "node_modules/@uswds/uswds",
           "node_modules/@uswds/uswds/dist",

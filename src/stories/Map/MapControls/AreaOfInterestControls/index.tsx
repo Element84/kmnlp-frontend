@@ -1,7 +1,8 @@
 import React, { useState, useMemo, useEffect, useRef } from "react";
 import { useSetAtom } from "jotai";
-import { Button, TextInput } from "@trussworks/react-uswds";
+import { Button, Icon, TextInput } from "@trussworks/react-uswds";
 import type { FeatureCollection } from "geojson";
+import type { PolygonPoint } from "../utils/area-of-interest";
 import "./area-of-interest-controls.scss";
 import { UploadAOIModal } from "./UploadAOIModal";
 import { apiClient } from "../../../../services/api-client";
@@ -14,6 +15,9 @@ export interface AreaOfInterestControlsProps {
   defaultName?: string;
   isOpen?: boolean;
   hasDrawnArea?: boolean;
+  showSelectionHint?: boolean;
+  isDrawingPolygon?: boolean;
+  polygonPoints?: PolygonPoint[];
   onGeoJSONUpload?: (data: FeatureCollection, fileName: string) => void;
   aoiList?: AOISummary[];
   onLoadAOIs?: () => void;
@@ -35,15 +39,16 @@ export const AreaOfInterestControls: React.FC<AreaOfInterestControlsProps> = ({
 }) => {
   const [isCreateNew, setIsCreateNew] = useState(true);
   const [aoiName, setAoiName] = useState(defaultName);
-  const [selectedFile, setSelectedFile] = useState<File | undefined>(undefined);
-  const [uploadedGeoJSON, setUploadedGeoJSON] =
-    useState<FeatureCollection | null>(null);
+  const [selectedFile] = useState<File | undefined>(undefined);
+  const [, setUploadedGeoJSON] = useState<FeatureCollection | null>(null);
   const [uploadedFileName, setUploadedFileName] = useState<string>("");
   const [isUploadModalOpen, setIsUploadModalOpen] = useState(false);
   const [selectedExistingAOI, setSelectedExistingAOI] = useState<{
     name: string;
     uuid: string;
   } | null>(null);
+  const [isFadingOut, setIsFadingOut] = useState(false);
+  const [showHint, setShowHint] = useState(false);
 
   // Get setter for applied AOI atom
   const setAppliedAOI = useSetAtom(appliedAOIAtom);
@@ -65,12 +70,32 @@ export const AreaOfInterestControls: React.FC<AreaOfInterestControlsProps> = ({
       hasLoadedAOIs.current = true;
       onLoadAOIs();
     }
-    
+
     // Reset the flag when component closes
     if (!isOpen) {
       hasLoadedAOIs.current = false;
     }
   }, [isOpen, onLoadAOIs]);
+
+  // Handle hint visibility with fade-out animation
+  useEffect(() => {
+    const shouldShowHint = isOpen && !hasDrawnArea;
+
+    if (shouldShowHint && !showHint) {
+      // Show hint immediately
+      setShowHint(true);
+      setIsFadingOut(false);
+    } else if (!shouldShowHint && showHint) {
+      // Start fade-out animation
+      setIsFadingOut(true);
+      // Remove from DOM after animation completes
+      const timeout = setTimeout(() => {
+        setShowHint(false);
+        setIsFadingOut(false);
+      }, 300); // Match animation duration
+      return () => clearTimeout(timeout);
+    }
+  }, [isOpen, hasDrawnArea, showHint]);
 
   if (!isOpen) return null;
 
@@ -88,7 +113,7 @@ export const AreaOfInterestControls: React.FC<AreaOfInterestControlsProps> = ({
     setSelectedExistingAOI(null);
     setUploadedGeoJSON(null);
     setUploadedFileName("");
-    console.log('[Jotai AOI] Clearing AOI on cancel');
+    console.log("[Jotai AOI] Clearing AOI on cancel");
     setAppliedAOI(null);
     onCancel?.();
   };
@@ -97,10 +122,6 @@ export const AreaOfInterestControls: React.FC<AreaOfInterestControlsProps> = ({
   const isApplyEnabled = isCreateNew
     ? aoiName.trim().length > 0 && hasDrawnArea && !isDuplicateName
     : selectedExistingAOI !== null;
-
-  const handleFileSelect = (file: File) => {
-    setSelectedFile(file);
-  };
 
   const handleGeoJSONUpload = (data: FeatureCollection, fileName: string) => {
     setUploadedGeoJSON(data);
@@ -116,29 +137,6 @@ export const AreaOfInterestControls: React.FC<AreaOfInterestControlsProps> = ({
   const handleUploadClick = () => {
     setIsUploadModalOpen(true);
   };
-  const mockListDate = [
-    { name: "Alfreds Futterkiste", date: "11-11-2021", uuid: "aoi-12345" },
-    {
-      name: "Centro comercial Moctezuma",
-      date: "11-11-2021",
-      uuid: "aoi-12345",
-    },
-    { name: "Ernst Handel", date: "11-11-2021", uuid: "aoi-12345" },
-    { name: "Alfreds Futterkiste", date: "11-11-2021", uuid: "aoi-12345" },
-    {
-      name: "Centro comercial Moctezuma",
-      date: "11-11-2021",
-      uuid: "aoi-12345",
-    },
-    { name: "Ernst Handel", date: "11-11-2021", uuid: "aoi-12345" },
-    { name: "Alfreds Futterkiste", date: "11-11-2021", uuid: "aoi-12345" },
-    {
-      name: "Centro comercial Moctezuma",
-      date: "11-11-2021",
-      uuid: "aoi-12345",
-    },
-    { name: "Ernst Handel", date: "11-11-2021", uuid: "aoi-12345" },
-  ];
   const handleChooseExistingClick = () => {
     setIsCreateNew(false);
     setSelectedExistingAOI(null);
@@ -157,10 +155,10 @@ export const AreaOfInterestControls: React.FC<AreaOfInterestControlsProps> = ({
       });
 
       // Update the applied AOI atom with the received data
-      console.log('[Jotai AOI] Setting AOI from existing selection:', {
+      console.log("[Jotai AOI] Setting AOI from existing selection:", {
         name: aoiData.name,
         uuid: aoiData.uuid,
-        created_at: aoiData.created_at
+        created_at: aoiData.created_at,
       });
       setAppliedAOI({
         name: aoiData.name,
@@ -169,19 +167,11 @@ export const AreaOfInterestControls: React.FC<AreaOfInterestControlsProps> = ({
         created_at: aoiData.created_at,
       });
 
-      // Pass the GeoJSON to parent for map rendering
-      // Convert the Polygon geometry to a FeatureCollection for the map
-      const featureCollection: FeatureCollection = {
-        type: "FeatureCollection",
-        features: [
-          {
-            type: "Feature",
-            properties: { name: aoiData.name },
-            geometry: aoiData.geojson,
-          },
-        ],
-      };
-      onGeoJSONUpload?.(featureCollection, aoiData.name);
+      // The backend now returns a GeoJSON FeatureCollection directly.
+      onGeoJSONUpload?.(
+        aoiData.geojson as unknown as FeatureCollection,
+        aoiData.name,
+      );
     } catch (error) {
       console.error("Error fetching AOI:", error);
     }
@@ -196,7 +186,16 @@ export const AreaOfInterestControls: React.FC<AreaOfInterestControlsProps> = ({
           </h3>
         </div>
 
-        <div className=" display-flex flex-column">
+        <div className="display-flex flex-column">
+          {showHint && (
+            <div
+              className={`area-of-interest-controls__selection-hint  text-primary padding-1 padding-x-2 radius-md font-body-sm font-weight-500 shadow-2 display-flex flex-align-center text-left   ${isFadingOut ? "fade-out" : ""}`}
+            >
+              <Icon.InfoOutline size={3} className="margin-right-105" />
+              Click to add vertices (min 3). <br /> right click to complete
+              polygon.
+            </div>
+          )}
           {/* Tab Buttons */}
           <div className="padding-x-2 padding-top-2">
             <div className="display-flex gap-05 bg-base-lightest radius-sm padding-05 margin-bottom-2">
@@ -214,7 +213,9 @@ export const AreaOfInterestControls: React.FC<AreaOfInterestControlsProps> = ({
                   setUploadedFileName("");
                   setSelectedExistingAOI(null);
                   // Clear the applied AOI jotai object
-                  console.log('[Jotai AOI] Clearing AOI on tab switch to Create New');
+                  console.log(
+                    "[Jotai AOI] Clearing AOI on tab switch to Create New",
+                  );
                   setAppliedAOI(null);
                   onTabChange?.(true);
                 }}
@@ -249,6 +250,7 @@ export const AreaOfInterestControls: React.FC<AreaOfInterestControlsProps> = ({
                 name="aoi-name"
                 type="text"
                 value={aoiName}
+                placeholder="Area of interest name"
                 onChange={(e) => setAoiName(e.target.value)}
                 className={`width-full radius-lg ${isDuplicateName ? "border-secondary-dark border-2px" : ""}`}
                 validationStatus={isDuplicateName ? "error" : undefined}
@@ -292,7 +294,9 @@ export const AreaOfInterestControls: React.FC<AreaOfInterestControlsProps> = ({
                       >
                         <tr className="display-flex flex-justify width-full">
                           <td className="flex-5">{item.name}</td>
-                          <td className="flex-2">{new Date(item.created_at).toLocaleDateString()}</td>
+                          <td className="flex-2">
+                            {new Date(item.created_at).toLocaleDateString()}
+                          </td>
                         </tr>
                       </Button>
                     ))
@@ -309,6 +313,7 @@ export const AreaOfInterestControls: React.FC<AreaOfInterestControlsProps> = ({
                 type="button"
                 onClick={handleUploadClick}
                 outline
+                title="Upload Area of interest"
                 className="display-flex gap-05 flex-align-center flex-justify-center width-card font-body-sm text-semibold border-primary text-primary hover:bg-primary-lighter hover:border-primary-dark hover:text-primary-dark"
               >
                 <svg

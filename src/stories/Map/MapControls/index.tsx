@@ -53,13 +53,9 @@ export const MapControls: React.FC<MapControlsProps> = ({
   onZoomOut,
   onMarqueeZoom,
   marqueeZoomActive = false,
-  onFullScreen,
   onBasemapChange,
   selectedBasemap = "light",
   onLocationSelect,
-  onCogToggle,
-  cogVisible = true,
-  hasCogLayer = false,
   className = "",
   disabled = false,
 }) => {

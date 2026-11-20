@@ -6,30 +6,6 @@
   },
   "paths": {
     "/users": {
-      "get": {
-        "tags": [
-          "users"
-        ],
-        "summary": "Get Users",
-        "description": "Get all user IDs.",
-        "operationId": "get_users_users_get",
-        "responses": {
-          "200": {
-            "description": "Successful Response",
-            "content": {
-              "application/json": {
-                "schema": {
-                  "items": {
-                    "type": "string"
-                  },
-                  "type": "array",
-                  "title": "Response Get Users Users Get"
-                }
-              }
-            }
-          }
-        }
-      },
       "post": {
         "tags": [
           "users"
@@ -121,9 +97,19 @@
           "chats"
         ],
         "summary": "Get User Chats",
-        "description": "Fetch user chats.",
+        "description": "Fetch user chats, up to 25 at a time; use offset for pagination.",
         "operationId": "get_user_chats_chats_get",
         "parameters": [
+          {
+            "name": "offset",
+            "in": "query",
+            "required": false,
+            "schema": {
+              "type": "integer",
+              "default": 0,
+              "title": "Offset"
+            }
+          },
           {
             "name": "x-user-id",
             "in": "header",
@@ -272,16 +258,6 @@
             }
           },
           {
-            "name": "stub_image",
-            "in": "query",
-            "required": false,
-            "schema": {
-              "type": "boolean",
-              "default": false,
-              "title": "Stub Image"
-            }
-          },
-          {
             "name": "x-user-id",
             "in": "header",
             "required": true,
@@ -328,6 +304,67 @@
         }
       }
     },
+    "/chats/{chat_id}/data/{key}": {
+      "get": {
+        "tags": [
+          "chats"
+        ],
+        "summary": "Get Data Download Url",
+        "description": "Get a download URL for the specified chat data.",
+        "operationId": "get_data_download_url_chats__chat_id__data__key__get",
+        "parameters": [
+          {
+            "name": "chat_id",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Chat Id"
+            }
+          },
+          {
+            "name": "key",
+            "in": "path",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "Key"
+            }
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/DataDownloadURL"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
     "/aois": {
       "post": {
         "tags": [
@@ -336,15 +373,44 @@
         "summary": "Create Area Of Interest",
         "description": "Create an AOI in the backend and return its UUID.",
         "operationId": "create_area_of_interest_aois_post",
+        "parameters": [
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
+          }
+        ],
+        "requestBody": {
+          "required": true,
+          "content": {
+            "application/json": {
+              "schema": {
+                "$ref": "#/components/schemas/app__types__input__AOI"
+              }
+            }
+          }
+        },
         "responses": {
           "201": {
             "description": "Successful Response",
             "content": {
               "application/json": {
                 "schema": {
-                  "type": "string",
-                  "format": "uuid",
-                  "title": "Response Create Area Of Interest Aois Post"
+                  "$ref": "#/components/schemas/UUIDDict"
+                }
+              }
+            }
+          },
+          "422": {
+            "description": "Validation Error",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "$ref": "#/components/schemas/HTTPValidationError"
                 }
               }
             }
@@ -373,6 +439,15 @@
                 }
               ],
               "title": "After Cursor"
+            }
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
             }
           }
         ],
@@ -417,6 +492,15 @@
               "type": "string",
               "title": "Aoi Id"
             }
+          },
+          {
+            "name": "x-user-id",
+            "in": "header",
+            "required": true,
+            "schema": {
+              "type": "string",
+              "title": "X-User-Id"
+            }
           }
         ],
         "responses": {
@@ -425,7 +509,7 @@
             "content": {
               "application/json": {
                 "schema": {
-                  "$ref": "#/components/schemas/AOIListResponse"
+                  "$ref": "#/components/schemas/app__types__output__AOI"
                 }
               }
             }
@@ -436,6 +520,32 @@
               "application/json": {
                 "schema": {
                   "$ref": "#/components/schemas/HTTPValidationError"
+                }
+              }
+            }
+          }
+        }
+      }
+    },
+    "/system/models": {
+      "get": {
+        "tags": [
+          "system"
+        ],
+        "summary": "Get Models",
+        "description": "Get information about LLM models used in the system.",
+        "operationId": "get_models_system_models_get",
+        "responses": {
+          "200": {
+            "description": "Successful Response",
+            "content": {
+              "application/json": {
+                "schema": {
+                  "items": {
+                    "$ref": "#/components/schemas/ModelInfo"
+                  },
+                  "type": "array",
+                  "title": "Response Get Models System Models Get"
                 }
               }
             }
@@ -632,6 +742,9 @@
                 "$ref": "#/components/schemas/Text"
               },
               {
+                "$ref": "#/components/schemas/TextDelta"
+              },
+              {
                 "$ref": "#/components/schemas/Plan-Input"
               },
               {
@@ -642,6 +755,21 @@
               },
               {
                 "$ref": "#/components/schemas/Image"
+              },
+              {
+                "$ref": "#/components/schemas/Video"
+              },
+              {
+                "$ref": "#/components/schemas/FilteredByAOI-Input"
+              },
+              {
+                "$ref": "#/components/schemas/Thinking"
+              },
+              {
+                "$ref": "#/components/schemas/ThinkingDelta"
+              },
+              {
+                "$ref": "#/components/schemas/ProgressUpdate"
               }
             ],
             "title": "Content",
@@ -650,11 +778,17 @@
               "mapping": {
                 "BackendError": "#/components/schemas/BackendError",
                 "EndOfTurn": "#/components/schemas/EndOfTurn",
+                "FilteredByAOI": "#/components/schemas/FilteredByAOI-Input",
                 "GeoTIFF": "#/components/schemas/GeoTIFF",
                 "GeocodedAOI": "#/components/schemas/GeocodedAOI-Input",
                 "Image": "#/components/schemas/Image",
                 "Plan": "#/components/schemas/Plan-Input",
-                "Text": "#/components/schemas/Text"
+                "ProgressUpdate": "#/components/schemas/ProgressUpdate",
+                "Text": "#/components/schemas/Text",
+                "TextDelta": "#/components/schemas/TextDelta",
+                "Thinking": "#/components/schemas/Thinking",
+                "ThinkingDelta": "#/components/schemas/ThinkingDelta",
+                "Video": "#/components/schemas/Video"
               }
             }
           },
@@ -685,6 +819,9 @@
                 "$ref": "#/components/schemas/Text"
               },
               {
+                "$ref": "#/components/schemas/TextDelta"
+              },
+              {
                 "$ref": "#/components/schemas/Plan-Output"
               },
               {
@@ -695,6 +832,21 @@
               },
               {
                 "$ref": "#/components/schemas/Image"
+              },
+              {
+                "$ref": "#/components/schemas/Video"
+              },
+              {
+                "$ref": "#/components/schemas/FilteredByAOI-Output"
+              },
+              {
+                "$ref": "#/components/schemas/Thinking"
+              },
+              {
+                "$ref": "#/components/schemas/ThinkingDelta"
+              },
+              {
+                "$ref": "#/components/schemas/ProgressUpdate"
               }
             ],
             "title": "Content",
@@ -703,11 +855,17 @@
               "mapping": {
                 "BackendError": "#/components/schemas/BackendError",
                 "EndOfTurn": "#/components/schemas/EndOfTurn",
+                "FilteredByAOI": "#/components/schemas/FilteredByAOI-Output",
                 "GeoTIFF": "#/components/schemas/GeoTIFF",
                 "GeocodedAOI": "#/components/schemas/GeocodedAOI-Output",
                 "Image": "#/components/schemas/Image",
                 "Plan": "#/components/schemas/Plan-Output",
-                "Text": "#/components/schemas/Text"
+                "ProgressUpdate": "#/components/schemas/ProgressUpdate",
+                "Text": "#/components/schemas/Text",
+                "TextDelta": "#/components/schemas/TextDelta",
+                "Thinking": "#/components/schemas/Thinking",
+                "ThinkingDelta": "#/components/schemas/ThinkingDelta",
+                "Video": "#/components/schemas/Video"
               }
             }
           },
@@ -817,7 +975,14 @@
             "title": "Name"
           },
           "value": {
-            "type": "string",
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "$ref": "#/components/schemas/DownloadLink"
+              }
+            ],
             "title": "Value"
           }
         },
@@ -873,9 +1038,20 @@
             "title": "Content Type",
             "default": "DataAnalysisSolution"
           },
-          "thoughts": {
+          "reasoning": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Reasoning"
+          },
+          "analysis": {
             "type": "string",
-            "title": "Thoughts"
+            "title": "Analysis"
           },
           "pseudocode": {
             "type": "string",
@@ -888,12 +1064,26 @@
         },
         "type": "object",
         "required": [
-          "thoughts",
+          "analysis",
           "pseudocode",
           "explanation"
         ],
         "title": "DataAnalysisSolution",
         "description": "A data analysis solution."
+      },
+      "DataDownloadURL": {
+        "properties": {
+          "url": {
+            "type": "string",
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "DataDownloadURL",
+        "description": "A data download URL."
       },
       "DatasetMetadata": {
         "properties": {
@@ -984,6 +1174,37 @@
         "title": "DatasetSearchDetails",
         "description": "Dataset search details."
       },
+      "DownloadLink": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "DownloadLink",
+            "title": "Content Type",
+            "default": "DownloadLink"
+          },
+          "file_type": {
+            "type": "string",
+            "enum": [
+              "image",
+              "animation",
+              "geotiff",
+              "data"
+            ],
+            "title": "File Type"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "file_type",
+          "url"
+        ],
+        "title": "DownloadLink",
+        "description": "A download link."
+      },
       "EndOfTurn": {
         "properties": {
           "content_type": {
@@ -996,6 +1217,44 @@
         "type": "object",
         "title": "EndOfTurn",
         "description": "End of LLM turn."
+      },
+      "FilteredByAOI-Input": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "FilteredByAOI",
+            "title": "Content Type",
+            "default": "FilteredByAOI"
+          },
+          "geojson": {
+            "$ref": "#/components/schemas/GeoJSONFeatureCollection-Input"
+          }
+        },
+        "type": "object",
+        "required": [
+          "geojson"
+        ],
+        "title": "FilteredByAOI",
+        "description": "Filtered by AOI."
+      },
+      "FilteredByAOI-Output": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "FilteredByAOI",
+            "title": "Content Type",
+            "default": "FilteredByAOI"
+          },
+          "geojson": {
+            "$ref": "#/components/schemas/GeoJSONFeatureCollection-Output"
+          }
+        },
+        "type": "object",
+        "required": [
+          "geojson"
+        ],
+        "title": "FilteredByAOI",
+        "description": "Filtered by AOI."
       },
       "GeoJSONFeature-Input": {
         "properties": {
@@ -1232,16 +1491,7 @@
       "GeoJSONGeometry-Input": {
         "properties": {
           "type": {
-            "type": "string",
-            "enum": [
-              "Point",
-              "MultiPoint",
-              "LineString",
-              "MultiLineString",
-              "Polygon",
-              "MultiPolygon"
-            ],
-            "title": "Type"
+            "$ref": "#/components/schemas/GeomType"
           },
           "coordinates": {
             "anyOf": [
@@ -1311,16 +1561,7 @@
       "GeoJSONGeometry-Output": {
         "properties": {
           "type": {
-            "type": "string",
-            "enum": [
-              "Point",
-              "MultiPoint",
-              "LineString",
-              "MultiLineString",
-              "Polygon",
-              "MultiPolygon"
-            ],
-            "title": "Type"
+            "$ref": "#/components/schemas/GeomType"
           },
           "coordinates": {
             "anyOf": [
@@ -1537,6 +1778,17 @@
             "type": "string",
             "title": "Query"
           },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
           "geojson": {
             "$ref": "#/components/schemas/GeoJSONFeatureCollection-Input"
           }
@@ -1561,6 +1813,17 @@
             "type": "string",
             "title": "Query"
           },
+          "label": {
+            "anyOf": [
+              {
+                "type": "string"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Label"
+          },
           "geojson": {
             "$ref": "#/components/schemas/GeoJSONFeatureCollection-Output"
           }
@@ -1572,6 +1835,17 @@
         ],
         "title": "GeocodedAOI",
         "description": "Geocoded AOI."
+      },
+      "GeomType": {
+        "type": "string",
+        "enum": [
+          "Point",
+          "MultiPoint",
+          "LineString",
+          "MultiLineString",
+          "Polygon",
+          "MultiPolygon"
+        ]
       },
       "HTTPValidationError": {
         "properties": {
@@ -1596,7 +1870,10 @@
           },
           "media_type": {
             "type": "string",
-            "const": "image/png",
+            "enum": [
+              "image/png",
+              "image/gif"
+            ],
             "title": "Media Type",
             "default": "image/png"
           },
@@ -1673,6 +1950,25 @@
           "$ref": "#/components/schemas/Point"
         },
         "type": "array"
+      },
+      "ModelInfo": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "description": {
+            "type": "string",
+            "title": "Description"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "description"
+        ],
+        "title": "ModelInfo",
+        "description": "Information about an LLM model used in the system."
       },
       "PaginationInfo": {
         "properties": {
@@ -2001,18 +2297,17 @@
       },
       "Text": {
         "properties": {
-          "text": {
-            "type": "string",
-            "title": "Text"
-          },
           "content_type": {
             "type": "string",
             "const": "Text",
             "title": "Content Type",
             "default": "Text"
+          },
+          "text": {
+            "type": "string",
+            "title": "Text"
           }
         },
-        "additionalProperties": false,
         "type": "object",
         "required": [
           "text"
@@ -2020,24 +2315,111 @@
         "title": "Text",
         "description": "Text response from the LLM."
       },
+      "TextDelta": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "TextDelta",
+            "title": "Content Type",
+            "default": "TextDelta"
+          },
+          "content_delta": {
+            "type": "string",
+            "title": "Content Delta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content_delta"
+        ],
+        "title": "TextDelta",
+        "description": "Text delta response from the LLM."
+      },
+      "Thinking": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "Thinking",
+            "title": "Content Type",
+            "default": "Thinking"
+          },
+          "thinking": {
+            "type": "string",
+            "title": "Thinking"
+          },
+          "duration": {
+            "anyOf": [
+              {
+                "type": "number"
+              },
+              {
+                "type": "null"
+              }
+            ],
+            "title": "Duration",
+            "description": "Duration of the thinking stream in seconds. Will be None if the thinking was brief enough to be emitted in one go instead of a stream."
+          }
+        },
+        "type": "object",
+        "required": [
+          "thinking"
+        ],
+        "title": "Thinking",
+        "description": "Thinking response from the LLM."
+      },
+      "ThinkingDelta": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "ThinkingDelta",
+            "title": "Content Type",
+            "default": "ThinkingDelta"
+          },
+          "content_delta": {
+            "type": "string",
+            "title": "Content Delta"
+          }
+        },
+        "type": "object",
+        "required": [
+          "content_delta"
+        ],
+        "title": "ThinkingDelta",
+        "description": "Thinking delta response from the LLM."
+      },
       "UIState": {
         "properties": {
           "aoi": {
             "anyOf": [
               {
-                "type": "string"
+                "type": "string",
+                "format": "uuid"
               },
               {
                 "type": "null"
               }
             ],
             "title": "Aoi",
-            "description": "AOI URI or geometry."
+            "description": "AOI UUID."
           }
         },
         "type": "object",
         "title": "UIState",
         "description": "UI state."
+      },
+      "UUIDDict": {
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "title": "Uuid"
+          }
+        },
+        "type": "object",
+        "required": [
+          "uuid"
+        ],
+        "title": "UUIDDict",
+        "description": "Model to return a single UUID."
       },
       "UserCreateRequest": {
         "properties": {
@@ -2137,6 +2519,87 @@
         ],
         "title": "Variable",
         "description": "A variable used in data analysis."
+      },
+      "Video": {
+        "properties": {
+          "content_type": {
+            "type": "string",
+            "const": "Video",
+            "title": "Content Type",
+            "default": "Video"
+          },
+          "media_type": {
+            "type": "string",
+            "const": "video/mp4",
+            "title": "Media Type",
+            "default": "video/mp4"
+          },
+          "url": {
+            "type": "string",
+            "title": "Url"
+          }
+        },
+        "type": "object",
+        "required": [
+          "url"
+        ],
+        "title": "Video",
+        "description": "A video to display in chat."
+      },
+      "app__types__input__AOI": {
+        "properties": {
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "geometry": {
+            "anyOf": [
+              {
+                "$ref": "#/components/schemas/GeoJSONGeometry-Input"
+              },
+              {
+                "$ref": "#/components/schemas/GeoJSONFeatureCollection-Input"
+              }
+            ],
+            "title": "Geometry"
+          }
+        },
+        "type": "object",
+        "required": [
+          "name",
+          "geometry"
+        ],
+        "title": "AOI",
+        "description": "Request model for creating a new AOI."
+      },
+      "app__types__output__AOI": {
+        "properties": {
+          "uuid": {
+            "type": "string",
+            "title": "Uuid"
+          },
+          "name": {
+            "type": "string",
+            "title": "Name"
+          },
+          "geojson": {
+            "$ref": "#/components/schemas/GeoJSONFeatureCollection-Output"
+          },
+          "created_at": {
+            "type": "string",
+            "format": "date-time",
+            "title": "Created At"
+          }
+        },
+        "type": "object",
+        "required": [
+          "uuid",
+          "name",
+          "geojson",
+          "created_at"
+        ],
+        "title": "AOI",
+        "description": "AOI Model."
       }
     }
   }

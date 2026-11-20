@@ -10,7 +10,7 @@ import {
   chatMessagesAtom,
   chatLoadingStateAtom,
   chatErrorStateAtom,
-  cogInfoAtom,
+  cogInfosAtom,
   userSessionStateAtom,
   appliedAOIAtom,
 } from "./atoms";
@@ -65,7 +65,7 @@ export const sendMessageAtom = atom(
         chatId = chat.id;
         set(currentChatIdAtom, chat.id);
         set(chatMessagesAtom, []); // Clear any existing messages
-        set(cogInfoAtom, undefined); // Clear any previous GeoTIFF URL
+        set(cogInfosAtom, []); // Clear any previous GeoTIFF layers
         chatWasCreated = true;
       } catch (error) {
         const apiError = error as ApiError;
@@ -88,11 +88,13 @@ export const sendMessageAtom = atom(
     }
 
     // Add user message
+    const appliedAOI = get(appliedAOIAtom);
     const userMessage: ChatMessage = {
       id: `user-${Date.now()}`,
       text: content,
       type: "user",
       timestamp: new Date(),
+      aoiName: appliedAOI?.name,
     };
     const prevMessages = get(chatMessagesAtom);
     set(chatMessagesAtom, [...prevMessages, userMessage]);
@@ -104,8 +106,7 @@ export const sendMessageAtom = atom(
       shouldShowLoadingIndicator: true,
     });
 
-    // Get the applied AOI and include it in ui_state
-    const appliedAOI = get(appliedAOIAtom);
+    // Include the applied AOI in ui_state
     const mergedUIState: UIState = {
       ...uiState,
       aoi: appliedAOI ? appliedAOI.uuid : undefined,

@@ -1,4 +1,4 @@
-@import "../../../NOAA-theme.scss";
+@use "../../../NOAA-theme.scss" as *;
 
 // Map Container with USWDS utility classes
 .map-container {

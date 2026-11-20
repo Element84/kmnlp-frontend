@@ -44,6 +44,10 @@
   &--failed {
     color: $theme-color-error;
   }
+
+  &--cancelled {
+    color: $theme-color-base-dark;
+  }
 }
 
 @keyframes pulse {

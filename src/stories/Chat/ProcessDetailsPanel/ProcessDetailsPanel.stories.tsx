@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { ProcessDetailsPanel } from './ProcessDetailsPanel';
+import type { DatasetMetadata, Step } from '../../../types/api';
 
 const meta: Meta<typeof ProcessDetailsPanel> = {
   title: 'Chat/ProcessDetailsPanel',
@@ -22,7 +23,7 @@ const meta: Meta<typeof ProcessDetailsPanel> = {
       description: 'Callback when panel is closed',
     },
     stepDetails: {
-      description: 'Details about the process step to display',
+      description: 'Details about the process steps to display',
     },
   },
 };
@@ -30,26 +31,49 @@ const meta: Meta<typeof ProcessDetailsPanel> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const sampleStepDetails = {
-  stepNumber: 1,
-  title: "Checking for data associated with Gulf of Mexico between 2020-2025",
-  status: "completed" as const,
-  datasets: [
-    {
-      name: "Gulf of Mexico Coastal Ocean Observing System (GCOOS) Open GIS Data",
-      description: "CoralTemp is derived from three different but related 5km daily gap-free SST data sets and provides an internally consistent SST product that stretches from 1985 to present: OSTIA Sea Surface Temperature Reanalysis (1985-2002), Geo-Polar Blended Night-only Sea Surface Temperature Reanalysis (2002-2016), Geo-Polar Blended Night-only Sea Surface Temperature Near Real-Time (2017 to present).",
-      datasetPageUrl: "https://data.noaa.gov/dataset/gcoos-open-gis-data",
-      temporalCoverage: "1985-01-01 to 2024-12-01",
-      spatialCoverage: "Global",
-      variables: ["analysed_sst", "sea_ice_area_fraction"]
+const sampleResults: DatasetMetadata[] = [
+  {
+    content_type: "DatasetMetadata",
+    title: "Gulf of Mexico Coastal Ocean Observing System (GCOOS) Open GIS Data",
+    description: "CoralTemp is derived from three different but related 5km daily gap-free SST data sets and provides an internally consistent SST product that stretches from 1985 to present: OSTIA Sea Surface Temperature Reanalysis (1985-2002), Geo-Polar Blended Night-only Sea Surface Temperature Reanalysis (2002-2016), Geo-Polar Blended Night-only Sea Surface Temperature Near Real-Time (2017 to present).",
+    temporal_coverage: "1985-01-01 to 2024-12-01",
+    spatial_coverage: "Global",
+    variables: ["analysed_sst", "sea_ice_area_fraction"],
+    landing_page: "https://data.noaa.gov/dataset/gcoos-open-gis-data",
+  },
+  {
+    content_type: "DatasetMetadata",
+    title: "Gulf of Mexico Open Data Platform",
+    description: "CoralTemp is derived from three different but related 5km daily gap-free SST data sets and provides an internally consistent SST product that stretches from 1985 to present: OSTIA Sea Surface Temperature Reanalysis (1985-2002), Geo-Polar Blended Night-only Sea Surface Temperature Reanalysis (2002-2016), Geo-Polar Blended Night-only Sea Surface Temperature Near Real-Time (2017 to present).",
+    temporal_coverage: "1985-01-01 to 2024-12-01",
+    spatial_coverage: "Global",
+    variables: [],
+    landing_page: null,
+  },
+];
+
+const makeStep = (
+  status: Step["status"],
+  results: DatasetMetadata[],
+): Step[] => [
+  {
+    id: "step-1",
+    title: "Checking for data associated with Gulf of Mexico between 2020-2025",
+    status,
+    outcome_summary: null,
+    progress_updates: null,
+    details: {
+      content_type: "StepDetails",
+      content: {
+        content_type: "DatasetSearchDetails",
+        query: "Gulf of Mexico data 2020-2025",
+        results,
+      },
     },
-    {
-      name: "Gulf of Mexico Open Data Platform",
-      description: "CoralTemp is derived from three different but related 5km daily gap-free SST data sets and provides an internally consistent SST product that stretches from 1985 to present: OSTIA Sea Surface Temperature Reanalysis (1985-2002), Geo-Polar Blended Night-only Sea Surface Temperature Reanalysis (2002-2016), Geo-Polar Blended Night-only Sea Surface Temperature Near Real-Time (2017 to present).",
-      bucketUrl: "https://s3.amazonaws.com/noaa-gom-data",
-    }
-  ]
-};
+  },
+];
+
+const sampleStepDetails: Step[] = makeStep("success", sampleResults);
 
 export const Default: Story = {
   args: {
@@ -68,58 +92,76 @@ export const Closed: Story = {
 export const InProgress: Story = {
   args: {
     isOpen: true,
-    stepDetails: {
-      ...sampleStepDetails,
-      status: "in_progress",
-    },
+    stepDetails: makeStep("in_progress", sampleResults),
   },
 };
 
 export const Failed: Story = {
   args: {
     isOpen: true,
-    stepDetails: {
-      ...sampleStepDetails,
-      status: "failed",
-    },
+    stepDetails: makeStep("failure", sampleResults),
   },
 };
 
 export const SingleDataset: Story = {
   args: {
     isOpen: true,
-    stepDetails: {
-      ...sampleStepDetails,
-      datasets: [sampleStepDetails.datasets![0]]
-    },
+    stepDetails: makeStep("success", [sampleResults[0]]),
   },
 };
 
 export const NoDatasets: Story = {
   args: {
     isOpen: true,
-    stepDetails: {
-      stepNumber: 2,
-      title: "Processing climate data models",
-      status: "completed",
-      datasets: []
-    },
+    stepDetails: [
+      {
+        id: "step-2",
+        title: "Processing climate data models",
+        status: "success",
+        outcome_summary: null,
+        progress_updates: null,
+        details: {
+          content_type: "StepDetails",
+          content: {
+            content_type: "DatasetSearchDetails",
+            query: "climate data models",
+            results: [],
+          },
+        },
+      },
+    ],
   },
 };
 
 export const WithMinimalDataset: Story = {
   args: {
     isOpen: true,
-    stepDetails: {
-      stepNumber: 3,
-      title: "Analyzing sea surface temperatures",
-      status: "completed",
-      datasets: [
-        {
-          name: "Basic Ocean Temperature Dataset",
-          description: "A simple dataset with minimal metadata for testing purposes.",
-        }
-      ]
-    },
+    stepDetails: [
+      {
+        id: "step-3",
+        title: "Analyzing sea surface temperatures",
+        status: "success",
+        outcome_summary: null,
+        progress_updates: null,
+        details: {
+          content_type: "StepDetails",
+          content: {
+            content_type: "DatasetSearchDetails",
+            query: "sea surface temperatures",
+            results: [
+              {
+                content_type: "DatasetMetadata",
+                title: "Basic Ocean Temperature Dataset",
+                description: "A simple dataset with minimal metadata for testing purposes.",
+                temporal_coverage: "",
+                spatial_coverage: "",
+                variables: [],
+                landing_page: null,
+              },
+            ],
+          },
+        },
+      },
+    ],
   },
 };

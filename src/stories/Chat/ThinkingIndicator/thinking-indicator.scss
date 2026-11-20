@@ -1,0 +1,70 @@
+.thinking-indicator {
+  margin: 8px 0;
+
+  &__header {
+    display: flex;
+    align-items: center;
+    gap: 6px;
+    padding: 2px 0;
+    background: none;
+    border: none;
+    cursor: pointer;
+    color: #71767a;
+    font-size: 0.85rem;
+    font-style: italic;
+  }
+
+  &__chevron {
+    display: inline-block;
+    font-size: 0.6rem;
+    transition: transform 0.2s ease;
+
+    &--expanded {
+      transform: rotate(90deg);
+    }
+  }
+
+  &--streaming &__label {
+    animation: thinking-indicator-pulse 1.4s ease-in-out infinite;
+  }
+
+  &__preview {
+    position: relative;
+    max-height: 5.6em; // ~4 lines
+    margin-top: 2px;
+    overflow: hidden;
+    color: #a9aeb1;
+    font-size: 0.8rem;
+    line-height: 1.4;
+    white-space: pre-wrap;
+    word-break: break-word;
+    // Fade only the very top edge so older lines read as slightly receding.
+    -webkit-mask-image: linear-gradient(to bottom, transparent 0%, #000 10%);
+    mask-image: linear-gradient(to bottom, transparent 0%, #000 10%);
+  }
+
+  &__full {
+    margin-top: 4px;
+    padding: 4px 0 4px 16px;
+    border-left: 2px solid #dfe1e2;
+    word-break: break-word;
+
+    // Keep the muted, small "thinking" look while using markdown-body layout.
+    &.markdown-body {
+      background: transparent;
+      color: #71767a;
+      font-size: 0.8rem;
+      line-height: 1.4;
+    }
+  }
+}
+
+@keyframes thinking-indicator-pulse {
+  0%,
+  100% {
+    opacity: 1;
+  }
+  50% {
+    opacity: 0.45;
+  }
+}

@@ -1,13 +1,12 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
 import {
   chatListAtom,
   chatManagementStateAtom,
-  userSessionStateAtom,
-  recentChatsAtom,
 } from "../store/atoms";
 import {
   refreshChatListAtom,
+  loadMoreChatListAtom,
   clearChatManagementErrorAtom,
   autoInitializeChatListAtom,
 } from "../store/chat-management-actions";
@@ -22,8 +21,11 @@ export interface ChatHistory {
 export interface UseChatManagementReturn {
   chatList: ChatHeader[];
   isLoading: boolean;
+  isLoadingMore: boolean;
+  hasMore: boolean;
   error: string | null;
   refreshChatList: () => Promise<void>;
+  loadMoreChats: () => Promise<void>;
   clearError: () => void;
 }
 
@@ -40,10 +42,10 @@ export const useChatManagement = (
   // Atom values
   const chatList = useAtomValue(chatListAtom);
   const managementState = useAtomValue(chatManagementStateAtom);
-  const sessionState = useAtomValue(userSessionStateAtom);
 
   // Atom actions
   const refreshChatListAction = useSetAtom(refreshChatListAtom);
+  const loadMoreChatListAction = useSetAtom(loadMoreChatListAtom);
   const clearErrorAction = useSetAtom(clearChatManagementErrorAtom);
   const autoInitializeChatList = useSetAtom(autoInitializeChatListAtom);
 
@@ -63,6 +65,10 @@ export const useChatManagement = (
     await refreshChatListAction();
   };
 
+  const loadMoreChats = async () => {
+    await loadMoreChatListAction();
+  };
+
   const clearError = () => {
     clearErrorAction();
   };
@@ -70,8 +76,11 @@ export const useChatManagement = (
   return {
     chatList,
     isLoading: managementState.isLoading,
+    isLoadingMore: managementState.isLoadingMore,
+    hasMore: managementState.hasMore,
     error: managementState.error,
     refreshChatList,
+    loadMoreChats,
     clearError,
   };
 };

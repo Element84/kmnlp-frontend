@@ -17,7 +17,12 @@ const config: StorybookConfig = {
         preprocessorOptions: {
           scss: {
             api: "legacy",
-            silenceDeprecations: ["legacy-js-api", "global-builtin", "mixed-decls"],
+            // Silence Dart Sass deprecations coming from USWDS in node_modules
+            // (@import, if(), /-division, deprecated settings/mixins).
+            quietDeps: true,
+            // "mixed-decls" dropped — obsolete in current Dart Sass; silencing an
+            // obsolete id emits its own warning.
+            silenceDeprecations: ["legacy-js-api", "global-builtin"],
             includePaths: [
               'node_modules/@uswds/uswds',
               'node_modules/@uswds/uswds/dist',

@@ -61,6 +61,18 @@ export const ChatView = ({
     }
   };
 
+  // ChatInput props (reused in both map-hidden and expanded states)
+  const chatInputProps = {
+    placeholder: "Enter Prompt...",
+    handleSubmit,
+    onSelectAOI,
+    onRemoveAOI,
+    onCancel,
+    prompt,
+    isProcessing,
+    setPrompt,
+  };
+
   // Map Maximized State: Collapsed with NO input controls
   if (viewState === "map-maximized") {
     return (
@@ -81,7 +93,9 @@ export const ChatView = ({
 
   // Map Hidden State: Full width chat (future implementation)
   if (viewState === "map-hidden") {
-    const hasMessages = children.props.messages.length > 0;
+    const hasMessages =
+      React.isValidElement<{ messages?: unknown[] }>(children) &&
+      (children.props.messages?.length ?? 0) > 0;
 
     return (
       <div
@@ -98,15 +112,7 @@ export const ChatView = ({
         </div>
         {!hasMessages && <h1>What would you like to ask?</h1>}
         <div className="chat-view__input-section">
-          <ChatInput
-            placeholder="Enter Prompt..."
-            handleSubmit={handleSubmit}
-            onSelectAOI={onSelectAOI}
-            onRemoveAOI={onRemoveAOI}
-            prompt={prompt}
-            isProcessing={isProcessing}
-            setPrompt={setPrompt}
-          />
+          <ChatInput {...chatInputProps} />
         </div>
       </div>
     );
@@ -136,16 +142,7 @@ export const ChatView = ({
       {hasMessages && <div className="chat-view__content">{children}</div>}
 
       <div className="chat-view__input-section">
-        <ChatInput
-          placeholder="Enter Prompt..."
-          handleSubmit={handleSubmit}
-          onSelectAOI={onSelectAOI}
-          onRemoveAOI={onRemoveAOI}
-          onCancel={onCancel}
-          isProcessing={isProcessing}
-          prompt={prompt}
-          setPrompt={setPrompt}
-        />
+        <ChatInput {...chatInputProps} />
         {/* <form onSubmit={handleSubmit} className="chat-view__input-form">
           <input
             type="text"

@@ -7,4 +7,4 @@ export const BASEMAP_OPTIONS: BasemapOption[] = [
   { type: "satellite", label: "Satellite", description: "Satellite imagery" },
 ];
 
-export const DEFAULT_BASEMAP = "Outdoors" as const;
+export const DEFAULT_BASEMAP = "outdoors" as const;

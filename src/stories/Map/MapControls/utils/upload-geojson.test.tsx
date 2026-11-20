@@ -1,6 +1,6 @@
 import { describe, it, expect } from 'vitest';
 import { isValidFileType, isValidFileSize, validateGeometryForMapping, parseGeoJSONFile } from './upload-geojson';
-import type { FeatureCollection } from 'geojson';
+import type { FeatureCollection, Geometry } from 'geojson';
 
 describe('upload-geojson utilities', () => {
   describe('isValidFileType', () => {
@@ -90,7 +90,7 @@ describe('upload-geojson utilities', () => {
         features: [
           {
             type: 'Feature',
-            geometry: null,
+            geometry: null as unknown as Geometry,
             properties: {}
           }
         ]

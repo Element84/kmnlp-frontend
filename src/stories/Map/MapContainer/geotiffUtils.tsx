@@ -70,18 +70,6 @@ const extractNodataValue = (image: any): number | null => {
   }
 };
 
-interface LoadCOGParams {
-  cogUrl: string;
-  viewport: MapViewport;
-  setCogLoading: (loading: boolean) => void;
-  setCogError: (error: string | null) => void;
-  onViewportChange: (viewport: MapViewport) => void;
-  setCogSource: (source: any) => void;
-  cancelled: React.MutableRefObject<boolean>;
-  setCogDataRange?: (range: { min: number; max: number } | null) => void;
-  colorScheme?: string;
-}
-
 export const loadCOG = async (
   cogUrl: string,
   viewport: MapViewport,
@@ -121,8 +109,6 @@ export const loadCOG = async (
 
     // Get additional metadata
     const fileDirectory = (image as any).fileDirectory;
-    const origin = (image as any).getOrigin?.() || null;
-    const resolution = (image as any).getResolution?.() || null;
     const gdalMetadata = fileDirectory?.GDAL_METADATA || null;
 
     // Parse GDAL metadata XML to JSON
@@ -148,10 +134,6 @@ export const loadCOG = async (
 
     const nodataValue = extractNodataValue(image);
     console.log("Extracted nodata value:", nodataValue);
-
-    // Check for scale/offset metadata that might explain the 100x factor
-    const sampleFormat = fileDirectory?.SampleFormat;
-    const bitsPerSample = fileDirectory?.BitsPerSample;
 
     // Look for scale factors in various metadata locations
     const possibleScaleKeys = [
@@ -244,7 +226,7 @@ export const loadCOG = async (
 
     // MapLibre expects coordinates in [top-left, top-right, bottom-right, bottom-left] order
 
-    const coordinates = [
+    const coordinates: Array<[number, number]> = [
       [bottomLeft[0], topRight[1]], // Top-Left (minX, maxY)
       [topRight[0], topRight[1]], // Top-Right (maxX, maxY)
       [topRight[0], bottomLeft[1]], // Bottom-Right (maxX, minY)

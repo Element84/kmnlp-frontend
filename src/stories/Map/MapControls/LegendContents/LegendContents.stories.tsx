@@ -1,6 +1,5 @@
 import type { Meta, StoryObj } from "@storybook/react";
-import { LegendTable, LegendGradient, getD3ColorScheme } from "./index";
-import * as d3 from "d3";
+import { LegendTable, LegendGradient } from "./index";
 
 // Combined example component
 const CombinedLegend = () => (

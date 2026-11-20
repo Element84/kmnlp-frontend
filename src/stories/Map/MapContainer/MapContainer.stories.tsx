@@ -55,7 +55,7 @@ const gulfViewport: MapViewport = {
 // Interactive wrapper component for stories with state
 const MapWithState = (args: any) => {
   const [viewport, setViewport] = useState<MapViewport>(
-    args.viewport || gulfViewport
+    args.viewport || gulfViewport,
   );
   const [selectedArea, setSelectedArea] = useState<AreaOfInterest | null>(null);
 
@@ -265,6 +265,7 @@ const FullLayoutStory = () => {
           areaSelectionActive={areaSelectionActive}
           onAreaSelect={setSelectedArea}
           selectedArea={selectedArea}
+          cogInfos={[]}
         >
           <MapControls
             aoiActive={areaSelectionActive}
@@ -324,7 +325,7 @@ export const CustomStyle: Story = {
           source: "osm",
         },
       ],
-    },
+    } as unknown as string,
   },
   parameters: {
     docs: {
@@ -345,6 +346,7 @@ const ErrorMapStory = () => {
         onViewportChange={() => {}}
         mapStyle="invalid-style-url"
         className="map-container--error"
+        cogInfos={[]}
       />
     </div>
   );
@@ -370,6 +372,7 @@ const LoadingMapStory = () => {
         viewport={gulfViewport}
         onViewportChange={() => {}}
         className="map-container--loading"
+        cogInfos={[]}
       />
     </div>
   );

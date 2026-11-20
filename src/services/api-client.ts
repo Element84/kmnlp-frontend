@@ -2,12 +2,12 @@ import type {
   Chat,
   ChatHeader,
   ChatRequest,
-  ChatResponse,
   UserCreateRequest,
   ApiError,
   HTTPValidationError,
   AOI,
   AOISummary,
+  SystemModel,
 } from "../types/api";
 import { API_CONFIG } from "../config/api";
 
@@ -88,8 +88,9 @@ export class ApiClient {
     return result;
   }
 
-  async getUserChats(): Promise<ChatHeader[]> {
-    const response = await fetch(`${this.baseUrl}/chats`, {
+  async getUserChats(offset: number = 0): Promise<ChatHeader[]> {
+    const params = new URLSearchParams({ offset: String(offset) });
+    const response = await fetch(`${this.baseUrl}/chats?${params.toString()}`, {
       method: "GET",
       headers: this.getHeaders(),
     });
@@ -119,7 +120,6 @@ export class ApiClient {
     request: ChatRequest,
     stubImage?: boolean,
   ): Promise<ReadableStream<Uint8Array> | null> {
-    const url = new URL(`${this.baseUrl}/chats/${chatId}`);
     console.log("Posting to chat:", chatId, request, stubImage);
     // Cancel any existing request
     if (this.currentAbortController) {
@@ -188,6 +188,37 @@ export class ApiClient {
     });
 
     return this.handleResponse(response);
+  }
+
+  async getSystemModels(): Promise<SystemModel[]> {
+    const response = await fetch(`${this.baseUrl}/system/models`, {
+      method: "GET",
+      headers: this.getHeaders(),
+    });
+
+    return this.handleResponse<SystemModel[]>(response);
+  }
+
+  /**
+   * Check if a URL points to this API (requires auth headers).
+   */
+  isApiUrl(url: string): boolean {
+    return url.startsWith(this.baseUrl);
+  }
+
+  /**
+   * Call an API data URL that returns a pre-signed S3 URL.
+   * Sends the x-user-id header, parses the DataDownloadURL response,
+   * and returns the S3 URL string.
+   */
+  async resolveDataUrl(url: string): Promise<string> {
+    const response = await fetch(url, {
+      method: "GET",
+      headers: this.getHeaders(),
+    });
+
+    const data = await this.handleResponse<{ url: string }>(response);
+    return data.url;
   }
 }
 

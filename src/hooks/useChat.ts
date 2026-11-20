@@ -1,18 +1,14 @@
-import { useAtom, useAtomValue, useSetAtom } from "jotai";
+import { useAtomValue, useSetAtom } from "jotai";
 import { useEffect } from "react";
 import {
-  chatMessagesAtom,
   chatErrorStateAtom,
   chatLoadingStateAtom,
   currentChatIdAtom,
-  cogInfoAtom,
+  cogInfosAtom,
   userSessionStateAtom,
   containerMessagesAtom,
 } from "../store/atoms";
-import {
-  initializeUserSessionAtom,
-  getCurrentUserIdAtom,
-} from "../store/user-session-actions";
+import { initializeUserSessionAtom } from "../store/user-session-actions";
 import {
   sendMessageAtom,
   startNewChatAtom,
@@ -43,7 +39,7 @@ export interface UseChatReturn {
   isLoading: boolean;
   isInitializing: boolean;
   currentChatId: string | null;
-  cogInfo?: CogInfo;
+  cogInfos: CogInfo[];
   sendMessage: (
     content: string,
     uiState?: UIState,
@@ -62,7 +58,7 @@ export const useChat = (): UseChatReturn => {
   const errorState = useAtomValue(chatErrorStateAtom);
   const loadingState = useAtomValue(chatLoadingStateAtom);
   const currentChatId = useAtomValue(currentChatIdAtom);
-  const cogInfo = useAtomValue(cogInfoAtom);
+  const cogInfos = useAtomValue(cogInfosAtom);
   const sessionState = useAtomValue(userSessionStateAtom);
 
   // Atom actions
@@ -95,7 +91,7 @@ export const useChat = (): UseChatReturn => {
   // Auto-show map when COG info is available
   useEffect(() => {
     autoShowMapForCog();
-  }, [cogInfo, autoShowMapForCog]);
+  }, [cogInfos, autoShowMapForCog]);
 
   // Wrapper functions to match original hook interface
   const sendMessage = async (
@@ -133,7 +129,7 @@ export const useChat = (): UseChatReturn => {
     isLoading: loadingState.isLoading,
     isInitializing: sessionState.isInitializing,
     currentChatId,
-    cogInfo,
+    cogInfos,
     sendMessage,
     startNewChat,
     resetToNewChat,

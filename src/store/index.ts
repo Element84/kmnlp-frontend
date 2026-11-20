@@ -21,13 +21,13 @@ export {
   // Map State
   mapViewportAtom,
   areaSelectionStateAtom,
-  cogInfoAtom,
+  cogInfosAtom,
   mapGeoJsonDataAtom,
   mapInteractionStateAtom,
   cogStateAtom,
 
   // Derived State
-  latestGeoJsonDataAtom,
+  geoJsonLayersAtom,
   uiStateAtom,
   containerMessagesAtom,
   recentChatsAtom,
@@ -45,6 +45,7 @@ export {
 // Chat Management Actions
 export {
   refreshChatListAtom,
+  loadMoreChatListAtom,
   clearChatManagementErrorAtom,
   autoInitializeChatListAtom,
 } from "./chat-management-actions";

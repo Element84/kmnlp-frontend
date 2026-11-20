@@ -6,9 +6,9 @@ import { MainLayout } from "./stories/Layout/MainLayout/MainLayout";
 import { ChatContainer } from "./stories/Chat/ChatContainer/ChatContainer";
 import { MapContainer } from "./stories/Map/MapContainer/MapContainer";
 import type { AreaOfInterestType as AreaOfInterest } from "./stories/Map/MapControls/utils/area-of-interest";
-import type { ViewState } from "./stories/Chat/ChatView/ChatView";
 import { useChat } from "./hooks/useChat";
 import { useChatManagement } from "./hooks/useChatManagement";
+import { useChatUrlSync } from "./hooks/useChatUrlSync";
 import { apiClient } from "./services/api-client";
 import { AOISummary } from "./types/api";
 import {
@@ -21,9 +21,8 @@ import {
   containerMessagesAtom,
   recentChatsAtom,
   uiStateAtom,
-  cogInfoAtom,
-  latestGeoJsonDataAtom,
-  userIdAtom,
+  cogInfosAtom,
+  geoJsonLayersAtom,
 } from "./store/atoms";
 import "./App.scss";
 import "./index.scss";
@@ -37,15 +36,21 @@ function AppContent() {
     sendMessage,
     resetToNewChat,
     loadChat,
-    clearError,
     cancelRequest,
   } = useChat();
 
   const {
+    isLoading: isChatListLoading,
+    isLoadingMore: isChatListLoadingMore,
+    hasMore: hasMoreChats,
     error: chatListError,
     refreshChatList,
+    loadMoreChats,
     clearError: clearChatListError,
   } = useChatManagement({ userSessionReady: !isInitializing });
+
+  // Keep the browser URL in sync with the active chat (router-free).
+  useChatUrlSync();
 
   // AOI list state
   const [aoiList, setAoiList] = useState<AOISummary[]>([]);
@@ -67,8 +72,7 @@ function AppContent() {
   const messages = useAtomValue(containerMessagesAtom);
   const recentChats = useAtomValue(recentChatsAtom);
   const uiState = useAtomValue(uiStateAtom);
-  const cogInfo = useAtomValue(cogInfoAtom);
-  const userId = useAtomValue(userIdAtom);
+  const cogInfos = useAtomValue(cogInfosAtom);
 
   // Simple handlers (no action atoms needed!)
   const handleToggleMapView = () => {
@@ -126,7 +130,7 @@ function AppContent() {
   const handleApplyAOI = async (
     aoiName: string,
     isNewAOI: boolean,
-    file?: File,
+    _file?: File,
     uploadedGeojson?: any,
   ) => {
     // Use uploaded GeoJSON if provided, otherwise convert selected area to GeoJSON format
@@ -146,12 +150,12 @@ function AppContent() {
     // Only send AOI data to backend if it's a new AOI being created
     if (isNewAOI) {
       try {
-        // Extract geometry from GeoJSON (handles both Feature and FeatureCollection)
+        // Backend accepts either a bare geometry or a full FeatureCollection.
         let geometry;
         if (geojson) {
           if (geojson.type === "FeatureCollection") {
-            // Get geometry from first feature in collection
-            geometry = geojson.features[0]?.geometry;
+            // Send the whole collection so multi-feature AOIs aren't truncated
+            geometry = geojson;
           } else if (geojson.type === "Feature") {
             // Get geometry from feature
             geometry = geojson.geometry;
@@ -164,7 +168,6 @@ function AppContent() {
         // Post to backend without UUID - backend will generate it
         const createdAOI = await apiClient.postAOI({
           name: aoiName,
-          created_at: new Date().toISOString(),
           geojson: geometry,
         });
 
@@ -252,8 +255,8 @@ function AppContent() {
               areaSelectionActive={areaSelectionState.isActive}
               selectedArea={areaSelectionState.selectedArea}
               aoiResetKey={aoiResetKey}
-              geoJsonData={useAtomValue(latestGeoJsonDataAtom)}
-              cogInfo={cogInfo}
+              geoJsonLayers={useAtomValue(geoJsonLayersAtom)}
+              cogInfos={cogInfos}
               aoiList={aoiList}
               onLoadAOIs={handleLoadAOIs}
               isLoadingAOIs={isLoadingAOIs}
@@ -265,6 +268,10 @@ function AppContent() {
           onToggleManagement={() => setManagementVisible(!managementVisible)}
           onNewChat={handleNewChat}
           onSelectChat={handleSelectChat}
+          onLoadMoreChats={loadMoreChats}
+          hasMoreChats={hasMoreChats}
+          isLoadingMoreChats={isChatListLoadingMore}
+          isLoadingChats={isChatListLoading}
           onSelectAOI={handleSelectAOI}
           onRemoveAOI={handleRemoveAOI}
           onSubmit={handleSubmit}

@@ -1,5 +1,6 @@
 import type { Meta, StoryObj } from '@storybook/react';
 import { DatasetContent } from './index';
+import type { DatasetInfo } from '../ProcessDetailsPanel';
 
 const meta: Meta<typeof DatasetContent> = {
   title: 'Chat/DatasetContent',
@@ -22,9 +23,10 @@ const meta: Meta<typeof DatasetContent> = {
 export default meta;
 type Story = StoryObj<typeof meta>;
 
-const sampleDatasets = [
+const sampleDatasets: DatasetInfo[] = [
   {
     name: "Gulf of Mexico Coastal Ocean Observing System (GCOOS) Open GIS Data",
+    title: "Gulf of Mexico Coastal Ocean Observing System (GCOOS) Open GIS Data",
     description: "CoralTemp is derived from three different but related 5km daily gap-free SST data sets and provides an internally consistent SST product that stretches from 1985 to present: OSTIA Sea Surface Temperature Reanalysis (1985-2002), Geo-Polar Blended Night-only Sea Surface Temperature Reanalysis (2002-2016), Geo-Polar Blended Night-only Sea Surface Temperature Near Real-Time (2017 to present).",
     datasetPageUrl: "https://data.noaa.gov/dataset/gcoos-open-gis-data",
     temporalCoverage: "1985-01-01 to 2024-12-01",
@@ -33,8 +35,9 @@ const sampleDatasets = [
   },
   {
     name: "Gulf of Mexico Open Data Platform",
+    title: "Gulf of Mexico Open Data Platform",
     description: "CoralTemp is derived from three different but related 5km daily gap-free SST data sets and provides an internally consistent SST product that stretches from 1985 to present: OSTIA Sea Surface Temperature Reanalysis (1985-2002), Geo-Polar Blended Night-only Sea Surface Temperature Reanalysis (2002-2016), Geo-Polar Blended Night-only Sea Surface Temperature Near Real-Time (2017 to present).",
-    bucketUrl: "https://s3.amazonaws.com/noaa-gom-data",
+    variables: [],
   }
 ];
 
@@ -55,9 +58,11 @@ export const MinimalDataset: Story = {
     datasets: [
       {
         name: "Basic Ocean Temperature Dataset",
+        title: "Basic Ocean Temperature Dataset",
         description: "A simple dataset with minimal metadata for testing purposes.",
+        variables: [],
       }
-    ],
+    ] as DatasetInfo[],
   },
 };
 

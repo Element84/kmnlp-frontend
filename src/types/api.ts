@@ -54,6 +54,7 @@ export interface GeoJSONFeatureCollection {
 export interface GeocodedAOI {
   content_type: "GeocodedAOI";
   query: string;
+  label?: string | null;
   geojson: GeoJSONFeatureCollection;
 }
 export interface EndOfTurn {
@@ -62,13 +63,35 @@ export interface EndOfTurn {
 
 export interface Image {
   content_type: "Image";
-  media_type: "image/png";
+  media_type: "image/png" | "image/gif";
+  url: string;
+}
+
+export interface Video {
+  content_type: "Video";
+  media_type: "video/mp4";
   url: string;
 }
 
 export interface Text {
   content_type: "Text";
   text: string;
+}
+
+export interface TextDelta {
+  content_type: "TextDelta";
+  content_delta: string;
+}
+
+export interface Thinking {
+  content_type: "Thinking";
+  thinking: string;
+  duration?: number | null; // Elapsed thinking time in seconds, if provided
+}
+
+export interface ThinkingDelta {
+  content_type: "ThinkingDelta";
+  content_delta: string;
 }
 
 // Variable type used in data analysis
@@ -88,14 +111,21 @@ export interface DataAnalysisProblem {
 
 export interface DataAnalysisSolution {
   content_type: "DataAnalysisSolution";
-  thoughts: string;
+  reasoning?: string | null;
+  analysis: string;
   pseudocode: string;
   explanation: string;
 }
 
+export interface DownloadLink {
+  content_type: "DownloadLink";
+  file_type: "image" | "animation" | "geotiff" | "data";
+  url: string;
+}
+
 export interface DataAnalysisOutput {
   name: string;
-  value: string;
+  value: string | DownloadLink;
 }
 
 export interface DataAnalysisDetails {
@@ -171,9 +201,14 @@ export type ChatResponseContent =
   | BackendError
   | EndOfTurn
   | Text
+  | TextDelta
+  | Thinking
+  | ThinkingDelta
   | Plan
+  | ProgressUpdate
   | GeoTIFF
   | Image
+  | Video
   | GeocodedAOI;
 
 export interface ChatResponse {
@@ -232,5 +267,11 @@ export interface AOI {
   name: string;
   uuid: string;
   created_at: string;
-  geojson: any;
+  geojson: GeoJSONFeatureCollection;
+}
+
+// System model types
+export interface SystemModel {
+  name: string;
+  description: string;
 }

@@ -1,7 +1,7 @@
 import { atom } from "jotai";
 import { atomWithStorage } from "jotai/utils";
-import type { ChatHeader, ChatMessage, UIState, DataAnalysisDetails } from "../types/api";
-import type { Message, ErrorState, ProcessStatus } from "../stories/Chat/ChatContainer/ChatContainer";
+import type { ChatHeader, UIState, DataAnalysisDetails, SystemModel } from "../types/api";
+import type { Message, ErrorState } from "../stories/Chat/ChatContainer/ChatContainer";
 import type { ViewState } from "../stories/Chat/ChatView/ChatView";
 import type { CogInfo, MapViewport } from "../stories/Map/MapContainer/types";
 import type { AreaOfInterestType as AreaOfInterest } from "../stories/Map/MapControls/utils/area-of-interest";
@@ -70,12 +70,18 @@ export const chatLoadingStateAtom = atom<{
  */
 export const chatManagementStateAtom = atom<{
   isLoading: boolean;
+  isLoadingMore: boolean;
   error: string | null;
   hasInitialized: boolean;
+  hasMore: boolean;
+  nextOffset: number;
 }>({
   isLoading: false,
+  isLoadingMore: false,
   error: null,
   hasInitialized: false,
+  hasMore: true,
+  nextOffset: 0,
 });
 
 /**
@@ -87,16 +93,19 @@ export const viewStateAtom = atom<ViewState>("map-hidden");
  * Chat management popover visibility
  */
 export const managementVisibleAtom = atom(false);
-
 /**
  * Analysis modal state
  * Controls the visibility and content of the analysis details modal
  */
 export const analysisModalStateAtom = atom<{
   isOpen: boolean;
+  selectedStepId: string | null;
+  selectedMessageId: string | null;
   selectedAnalysis: DataAnalysisDetails | null;
 }>({
   isOpen: false,
+  selectedStepId: null,
+  selectedMessageId: null,
   selectedAnalysis: null,
 });
 
@@ -109,10 +118,12 @@ export const processDetailsPanelStateAtom = atom<{
   isOpen: boolean;
   stepDetails: any[] | undefined; // Step[] type from API
   processTitle?: string;
+  messageId?: string;
 }>({
   isOpen: false,
   stepDetails: undefined,
   processTitle: undefined,
+  messageId: undefined,
 });
 
 /**
@@ -148,9 +159,24 @@ export const appliedAOIAtom = atom<AppliedAOI | null>(null);
 export const aoiResetKeyAtom = atom<boolean>(false);
 
 /**
+ * Available system models fetched from the backend
+ */
+export const systemModelsAtom = atom<SystemModel[]>([]);
+
+/**
+ * Whether the models dropdown in the chat input is open
+ */
+export const modelsDropdownOpenAtom = atom<boolean>(false);
+
+/**
+ * Whether the models dropdown should open above the button (drop-up)
+ */
+export const modelsDropdownDropUpAtom = atom<boolean>(false);
+
+/**
  * GeoTIFF/COG information for map display
  */
-export const cogInfoAtom = atom<CogInfo | undefined>(undefined);
+export const cogInfosAtom = atom<CogInfo[]>([]);
 
 /**
  * Current GeoJSON data displayed on map
@@ -192,16 +218,67 @@ export const cogStateAtom = atom<{
 });
 
 /**
- * Latest GeoJSON data from chat messages
- * Finds the most recent message containing map data
+ * GeoJSON layers from all chat messages.
+ *
+ * Returns one entry per message that carries `rawContent.mapData`, so the map
+ * can render each emitted GeoJSON as its own layer (with a distinct color)
+ * rather than only the most recent one.
+ *
+ * The result is memoized by the identity of the source collections: unrelated
+ * message updates (e.g. streamed text deltas) reuse the cached reference, so
+ * the map sources aren't needlessly re-set and the viewport auto-recenter only
+ * fires when the set of GeoJSONs actually changes.
  */
-export const latestGeoJsonDataAtom = atom((get) => {
+export interface GeoJsonLayerSource {
+  id: string;
+  data: any;
+  createdAt?: number;
+  label?: string;
+}
+
+let cachedGeoJsonInputs: any[] = [];
+let cachedGeoJsonLabels: Array<string | undefined> = [];
+let cachedGeoJsonLayers: GeoJsonLayerSource[] = [];
+
+export const normalizeMapLayerLabel = (label?: string | null) =>
+  label?.trim().toLocaleLowerCase() || undefined;
+
+export const geoJsonLayersAtom = atom((get): GeoJsonLayerSource[] => {
   const messages = get(chatMessagesAtom);
-  const messageWithGeoJson = messages
-    .slice()
-    .reverse()
-    .find((msg) => msg.rawContent?.mapData);
-  return messageWithGeoJson?.rawContent?.mapData || null;
+  const usedLabels = new Set<string>();
+
+  const layers: GeoJsonLayerSource[] = [];
+  for (const msg of messages) {
+    const mapData = msg.rawContent?.mapData;
+    if (mapData?.features?.length) {
+      const label = msg.rawContent?.label?.trim() || undefined;
+      const normalizedLabel = normalizeMapLayerLabel(label);
+      if (normalizedLabel && usedLabels.has(normalizedLabel)) continue;
+      if (normalizedLabel) usedLabels.add(normalizedLabel);
+
+      layers.push({
+        id: msg.id,
+        data: mapData,
+        createdAt: msg.mapLayerOrder ?? msg.timestamp.getTime(),
+        label,
+      });
+    }
+  }
+
+  const inputs = layers.map((layer) => layer.data);
+  const labels = layers.map((layer) => layer.label);
+  const unchanged =
+    inputs.length === cachedGeoJsonInputs.length &&
+    inputs.every((data, i) => data === cachedGeoJsonInputs[i]) &&
+    labels.every((label, i) => label === cachedGeoJsonLabels[i]);
+  if (unchanged) {
+    return cachedGeoJsonLayers;
+  }
+
+  cachedGeoJsonInputs = inputs;
+  cachedGeoJsonLabels = labels;
+  cachedGeoJsonLayers = layers;
+  return cachedGeoJsonLayers;
 });
 
 /**

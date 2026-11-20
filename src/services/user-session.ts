@@ -46,10 +46,6 @@ export class UserSessionManager {
     return `user-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
   }
 
-  private generateFallbackUserId(): string {
-    return `fallback-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`;
-  }
-
   private getStoredUserId(): string | null {
     try {
       return localStorage.getItem(this.USER_ID_KEY);

@@ -1,32 +1,36 @@
-import React, { useState } from 'react';
-import type { Meta, StoryObj } from '@storybook/react-vite';
-import { fn } from 'storybook/test';
-import { MainLayout, ChatHistory } from '../MainLayout/MainLayout';
-import { ChatContainer } from '../../Chat/ChatContainer/ChatContainer';
-import { ChatInput } from '../../Chat/ChatInput/ChatInput';
-import { ProcessIndicator } from '../../Chat/ProcessIndicator/ProcessIndicator';
-import { MapContainer, MapViewport, AreaOfInterest } from '../../Map/MapContainer/MapContainer';
-import { MapControls } from '../../Map/MapControls';
+import React, { useState } from "react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
+import { fn } from "storybook/test";
+import { MainLayout, ChatHistory } from "../MainLayout/MainLayout";
+import { ChatContainer } from "../../Chat/ChatContainer/ChatContainer";
+import { ChatInput } from "../../Chat/ChatInput/ChatInput";
+import {
+  MapContainer,
+  AreaOfInterest,
+} from "../../Map/MapContainer/MapContainer";
+import type { MapViewport } from "../../Map/MapContainer/types";
+import { MapControls } from "../../Map/MapControls";
 
 const meta: Meta<typeof MainLayout> = {
-  title: 'Integration/Complete System',
+  title: "Integration/Complete System",
   component: MainLayout,
   parameters: {
-    layout: 'fullscreen',
+    layout: "fullscreen",
     docs: {
       description: {
-        component: 'Complete integration stories demonstrating the full NOAA KMNLP application with realistic data flows, process tracking, and user interactions.',
+        component:
+          "Complete integration stories demonstrating the full NOAA KMNLP application with realistic data flows, process tracking, and user interactions.",
       },
     },
   },
   decorators: [
     (Story) => (
-      <div style={{ width: '100vw', height: '100vh', overflow: 'hidden' }}>
+      <div style={{ width: "100vw", height: "100vh", overflow: "hidden" }}>
         <Story />
       </div>
     ),
   ],
-  tags: ['autodocs'],
+  tags: ["autodocs"],
   args: {
     onViewStateChange: fn(),
     onToggleManagement: fn(),
@@ -46,22 +50,22 @@ const gulfViewport: MapViewport = {
   longitude: -89.0,
   zoom: 4,
   pitch: 0,
-  bearing: 0
+  bearing: 0,
 };
 
 // Integrated Map Component for Complete System Stories
 interface IntegratedMapProps {
-  analysisState: 'idle' | 'in_progress' | 'completed' | 'error';
+  analysisState: "idle" | "in_progress" | "completed" | "error";
   showControls?: boolean;
   collapsed?: boolean;
   overlayContent?: React.ReactNode;
 }
 
-const IntegratedMapComponent: React.FC<IntegratedMapProps> = ({ 
-  analysisState, 
-  showControls = true, 
+const IntegratedMapComponent: React.FC<IntegratedMapProps> = ({
+  analysisState,
+  showControls = true,
   collapsed = false,
-  overlayContent 
+  overlayContent,
 }) => {
   const [viewport, setViewport] = useState<MapViewport>(gulfViewport);
   const [aoiActive, setAoiActive] = useState(false);
@@ -72,61 +76,23 @@ const IntegratedMapComponent: React.FC<IntegratedMapProps> = ({
     setAoiActive(false);
   };
 
-  const getMapStyle = () => {
-    switch (analysisState) {
-      case 'completed':
-        return {
-          version: 8,
-          sources: {
-            'osm': {
-              type: 'raster',
-              tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-              tileSize: 256,
-              attribution: '© OpenStreetMap contributors'
-            }
-          },
-          layers: [
-            {
-              id: 'osm',
-              type: 'raster',
-              source: 'osm'
-            }
-          ]
-        };
-      case 'error':
-        // Simplified style for error state
-        return {
-          version: 8,
-          sources: {
-            'simple': {
-              type: 'raster',
-              tiles: ['https://tile.openstreetmap.org/{z}/{x}/{y}.png'],
-              tileSize: 256
-            }
-          },
-          layers: [
-            {
-              id: 'simple',
-              type: 'raster',
-              source: 'simple'
-            }
-          ]
-        };
-      default:
-        return undefined; // Use default style
-    }
+  const getMapStyle = (): string | undefined => {
+    // MapContainer expects a style URL string; use its default basemap for all states.
+    return undefined;
   };
 
   return (
-    <div style={{ 
-      position: 'absolute',
-      top: 0,
-      left: 0,
-      right: 0,
-      bottom: 0,
-      width: '100%', 
-      height: '100%'
-    }}>
+    <div
+      style={{
+        position: "absolute",
+        top: 0,
+        left: 0,
+        right: 0,
+        bottom: 0,
+        width: "100%",
+        height: "100%",
+      }}
+    >
       <MapContainer
         viewport={viewport}
         onViewportChange={setViewport}
@@ -135,20 +101,31 @@ const IntegratedMapComponent: React.FC<IntegratedMapProps> = ({
         selectedArea={selectedArea}
         collapsed={collapsed}
         mapStyle={getMapStyle()}
+        cogInfos={[]}
       >
         {showControls && (
           <MapControls
             aoiActive={aoiActive}
-            disabled={analysisState === 'error'}
+            disabled={analysisState === "error"}
             onAOIToggle={() => setAoiActive(!aoiActive)}
-            onZoomIn={() => setViewport(prev => ({ ...prev, zoom: Math.min(prev.zoom + 1, 22) }))}
-            onZoomOut={() => setViewport(prev => ({ ...prev, zoom: Math.max(prev.zoom - 1, 0) }))}
+            onZoomIn={() =>
+              setViewport((prev: MapViewport) => ({
+                ...prev,
+                zoom: Math.min(prev.zoom + 1, 22),
+              }))
+            }
+            onZoomOut={() =>
+              setViewport((prev: MapViewport) => ({
+                ...prev,
+                zoom: Math.max(prev.zoom - 1, 0),
+              }))
+            }
           />
         )}
       </MapContainer>
-      
+
       {/* No custom overlays - keep clean map design */}
-      
+
       {overlayContent}
     </div>
   );
@@ -156,23 +133,23 @@ const IntegratedMapComponent: React.FC<IntegratedMapProps> = ({
 
 const realisticChatHistory: ChatHistory[] = [
   {
-    id: 'chat-1',
-    title: 'Gulf Water Quality Analysis',
+    id: "chat-1",
+    title: "Gulf Water Quality Analysis",
     lastActivity: new Date(Date.now() - 86400000), // 1 day ago
   },
   {
-    id: 'chat-2',
-    title: 'Hurricane Impact Assessment',
+    id: "chat-2",
+    title: "Hurricane Impact Assessment",
     lastActivity: new Date(Date.now() - 172800000), // 2 days ago
   },
   {
-    id: 'chat-3',
-    title: 'Coral Reef Monitoring',
+    id: "chat-3",
+    title: "Coral Reef Monitoring",
     lastActivity: new Date(Date.now() - 259200000), // 3 days ago
   },
   {
-    id: 'chat-4',
-    title: 'Plastic Pollution Tracking',
+    id: "chat-4",
+    title: "Plastic Pollution Tracking",
     lastActivity: new Date(Date.now() - 345600000), // 4 days ago
   },
 ];
@@ -193,31 +170,107 @@ const sampleMessages = [
 ];
 
 const processStepsInProgress = [
-  { id: "1", text: "Accessing NOAA satellite imagery database", status: "completed" as const },
-  { id: "2", text: "Filtering data for Gulf of Mexico coordinates", status: "completed" as const },
-  { id: "3", text: "Processing water quality metrics (temperature, salinity, turbidity)", status: "completed" as const },
-  { id: "4", text: "Analyzing oil spill impact zones", status: "in_progress" as const },
-  { id: "5", text: "Correlating with historical pollution data", status: "pending" as const },
-  { id: "6", text: "Generating comparative analysis charts", status: "pending" as const },
-  { id: "7", text: "Preparing recommendations report", status: "pending" as const },
+  {
+    id: "1",
+    text: "Accessing NOAA satellite imagery database",
+    status: "completed" as const,
+  },
+  {
+    id: "2",
+    text: "Filtering data for Gulf of Mexico coordinates",
+    status: "completed" as const,
+  },
+  {
+    id: "3",
+    text: "Processing water quality metrics (temperature, salinity, turbidity)",
+    status: "completed" as const,
+  },
+  {
+    id: "4",
+    text: "Analyzing oil spill impact zones",
+    status: "in_progress" as const,
+  },
+  {
+    id: "5",
+    text: "Correlating with historical pollution data",
+    status: "pending" as const,
+  },
+  {
+    id: "6",
+    text: "Generating comparative analysis charts",
+    status: "pending" as const,
+  },
+  {
+    id: "7",
+    text: "Preparing recommendations report",
+    status: "pending" as const,
+  },
 ];
 
 const processStepsCompleted = [
-  { id: "1", text: "Accessing NOAA satellite imagery database", status: "completed" as const },
-  { id: "2", text: "Filtering data for Gulf of Mexico coordinates", status: "completed" as const },
-  { id: "3", text: "Processing water quality metrics", status: "completed" as const },
-  { id: "4", text: "Analyzing oil spill impact zones", status: "completed" as const },
-  { id: "5", text: "Correlating with historical pollution data", status: "completed" as const },
-  { id: "6", text: "Generating comparative analysis charts", status: "completed" as const },
-  { id: "7", text: "Preparing recommendations report", status: "completed" as const },
+  {
+    id: "1",
+    text: "Accessing NOAA satellite imagery database",
+    status: "completed" as const,
+  },
+  {
+    id: "2",
+    text: "Filtering data for Gulf of Mexico coordinates",
+    status: "completed" as const,
+  },
+  {
+    id: "3",
+    text: "Processing water quality metrics",
+    status: "completed" as const,
+  },
+  {
+    id: "4",
+    text: "Analyzing oil spill impact zones",
+    status: "completed" as const,
+  },
+  {
+    id: "5",
+    text: "Correlating with historical pollution data",
+    status: "completed" as const,
+  },
+  {
+    id: "6",
+    text: "Generating comparative analysis charts",
+    status: "completed" as const,
+  },
+  {
+    id: "7",
+    text: "Preparing recommendations report",
+    status: "completed" as const,
+  },
 ];
 
 const processStepsFailed = [
-  { id: "1", text: "Accessing NOAA satellite imagery database", status: "completed" as const },
-  { id: "2", text: "Filtering data for Gulf of Mexico coordinates", status: "completed" as const },
-  { id: "3", text: "Processing water quality metrics", status: "failed" as const },
-  { id: "4", text: "Analyzing oil spill impact zones", status: "pending" as const },
-  { id: "5", text: "Correlating with historical pollution data", status: "pending" as const },
+  {
+    id: "1",
+    text: "Accessing NOAA satellite imagery database",
+    status: "completed" as const,
+  },
+  {
+    id: "2",
+    text: "Filtering data for Gulf of Mexico coordinates",
+    status: "completed" as const,
+  },
+  {
+    id: "3",
+    text: "Processing water quality metrics",
+    status: "failed" as const,
+  },
+  {
+    id: "4",
+    text: "Analyzing oil spill impact zones",
+    status: "pending" as const,
+  },
+  {
+    id: "5",
+    text: "Correlating with historical pollution data",
+    status: "pending" as const,
+  },
 ];
 
 /**
@@ -225,7 +278,7 @@ const processStepsFailed = [
  */
 export const ActiveAnalysis: Story = {
   args: {
-    viewState: 'expanded',
+    viewState: "expanded",
     managementVisible: false,
     recentChats: realisticChatHistory,
     chatContent: (
@@ -243,15 +296,12 @@ export const ActiveAnalysis: Story = {
         <ChatInput
           placeholder="Follow up with additional questions..."
           isProcessing={true}
-          onSubmit={(message) => console.log("Message submitted:", message)}
+          prompt=""
+          setPrompt={() => {}}
         />
       </div>
     ),
-    mapContent: (
-      <IntegratedMapComponent 
-        analysisState="in_progress"
-      />
-    ),
+    mapContent: <IntegratedMapComponent analysisState="in_progress" />,
   },
 };
 
@@ -260,7 +310,7 @@ export const ActiveAnalysis: Story = {
  */
 export const CompletedAnalysis: Story = {
   args: {
-    viewState: 'expanded',
+    viewState: "expanded",
     managementVisible: false,
     recentChats: realisticChatHistory,
     chatContent: (
@@ -273,7 +323,7 @@ export const CompletedAnalysis: Story = {
               text: "Analysis completed successfully! I've identified several areas of concern in the Gulf of Mexico water quality data. The results show elevated turbidity levels in three specific zones, likely related to recent shipping activity and weather patterns.",
               type: "system" as const,
               timestamp: new Date(Date.now() - 60000),
-            }
+            },
           ]}
           processStatus={{
             id: "analysis-1",
@@ -285,16 +335,12 @@ export const CompletedAnalysis: Story = {
         />
         <ChatInput
           placeholder="Ask questions about the analysis results..."
-          onSubmit={(message) => console.log("Message submitted:", message)}
-
+          prompt=""
+          setPrompt={() => {}}
         />
       </div>
     ),
-    mapContent: (
-      <IntegratedMapComponent 
-        analysisState="completed"
-      />
-    ),
+    mapContent: <IntegratedMapComponent analysisState="completed" />,
   },
 };
 
@@ -303,7 +349,7 @@ export const CompletedAnalysis: Story = {
  */
 export const ErrorState: Story = {
   args: {
-    viewState: 'expanded',
+    viewState: "expanded",
     managementVisible: false,
     recentChats: realisticChatHistory,
     chatContent: (
@@ -318,23 +364,21 @@ export const ErrorState: Story = {
             isCollapsed: false,
           }}
           errorState={{
-            message: "Unable to process water quality metrics due to data connectivity issues.",
-            details: "The NOAA satellite data service is temporarily unavailable. This may be due to scheduled maintenance or network connectivity issues. Please try again in a few minutes.",
+            message:
+              "Unable to process water quality metrics due to data connectivity issues.",
+            details:
+              "The NOAA satellite data service is temporarily unavailable. This may be due to scheduled maintenance or network connectivity issues. Please try again in a few minutes.",
             showDetails: true,
           }}
         />
         <ChatInput
           placeholder="Try rephrasing your request or ask a different question..."
-          onSubmit={(message) => console.log("Message submitted:", message)}
-
+          prompt=""
+          setPrompt={() => {}}
         />
       </div>
     ),
-    mapContent: (
-      <IntegratedMapComponent 
-        analysisState="error"
-      />
-    ),
+    mapContent: <IntegratedMapComponent analysisState="error" />,
   },
 };
 
@@ -343,7 +387,7 @@ export const ErrorState: Story = {
  */
 export const MaximizedMapView: Story = {
   args: {
-    viewState: 'map-maximized',
+    viewState: "map-maximized",
     managementVisible: false,
     recentChats: realisticChatHistory,
     chatContent: (
@@ -351,16 +395,13 @@ export const MaximizedMapView: Story = {
         <ChatContainer messages={sampleMessages} />
         <ChatInput
           placeholder="Enter Prompt..."
-          onSubmit={(message) => console.log("Message submitted:", message)}
-
+          prompt=""
+          setPrompt={() => {}}
         />
       </div>
     ),
     mapContent: (
-      <IntegratedMapComponent 
-        analysisState="idle"
-        collapsed={true}
-      />
+      <IntegratedMapComponent analysisState="idle" collapsed={true} />
     ),
   },
 };
@@ -370,19 +411,23 @@ export const MaximizedMapView: Story = {
  */
 export const FullUserFlow: Story = {
   render: () => {
-    const [viewState, setViewState] = React.useState<'expanded' | 'map-maximized' | 'map-hidden'>('expanded');
+    const [viewState, setViewState] = React.useState<
+      "expanded" | "map-maximized" | "map-hidden"
+    >("expanded");
     const [managementVisible, setManagementVisible] = React.useState(false);
     const [messages, setMessages] = React.useState(sampleMessages);
     const [currentProcess, setCurrentProcess] = React.useState<any>(null);
-    const [analysisStep, setAnalysisStep] = React.useState(0);
 
     const startAnalysis = (message: string) => {
-      setMessages([...messages, {
-        id: Date.now().toString(),
-        text: message,
-        type: "user" as const,
-        timestamp: new Date(),
-      }]);
+      setMessages([
+        ...messages,
+        {
+          id: Date.now().toString(),
+          text: message,
+          type: "user" as const,
+          timestamp: new Date(),
+        },
+      ]);
 
       setCurrentProcess({
         id: "new-analysis",
@@ -401,17 +446,23 @@ export const FullUserFlow: Story = {
             id: "new-analysis",
             title: "Processing Your Request",
             steps: processStepsInProgress.slice(0, step + 2),
-            overallStatus: step === processStepsInProgress.length ? "completed" : "in_progress",
+            overallStatus:
+              step === processStepsInProgress.length
+                ? "completed"
+                : "in_progress",
             isCollapsed: false,
           });
 
           if (step === processStepsInProgress.length) {
-            setMessages(prev => [...prev, {
-              id: (Date.now() + 1).toString(),
-              text: "Analysis completed! I've processed your request and generated the environmental analysis you requested.",
-              type: "system" as const,
-              timestamp: new Date(),
-            }]);
+            setMessages((prev) => [
+              ...prev,
+              {
+                id: (Date.now() + 1).toString(),
+                text: "Analysis completed! I've processed your request and generated the environmental analysis you requested.",
+                type: "system" as const,
+                timestamp: new Date(),
+              },
+            ]);
             clearInterval(interval);
           }
         }
@@ -419,41 +470,44 @@ export const FullUserFlow: Story = {
     };
 
     const handleNewChat = () => {
-      setMessages([{
-        id: "new-1",
-        text: "New chat session started. How can I help you analyze NOAA environmental data today?",
-        type: "system" as const,
-        timestamp: new Date(),
-      }]);
+      setMessages([
+        {
+          id: "new-1",
+          text: "New chat session started. How can I help you analyze NOAA environmental data today?",
+          type: "system" as const,
+          timestamp: new Date(),
+        },
+      ]);
       setCurrentProcess(null);
       setManagementVisible(false);
     };
 
     const dynamicChatContent = (
       <div style={{ height: "100%", display: "flex", flexDirection: "column" }}>
-        <ChatContainer
-          messages={messages}
-          processStatus={currentProcess}
-        />
+        <ChatContainer messages={messages} processStatus={currentProcess} />
         <ChatInput
           placeholder="Try: 'Analyze water temperature trends in the Gulf'"
-          isProcessing={currentProcess?.overallStatus === 'in_progress'}
-          onSubmit={startAnalysis}
-
+          isProcessing={currentProcess?.overallStatus === "in_progress"}
+          prompt=""
+          setPrompt={() => {}}
         />
       </div>
     );
 
-    const getAnalysisState = (): 'idle' | 'in_progress' | 'completed' | 'error' => {
-      if (currentProcess?.overallStatus === 'completed') return 'completed';
-      if (currentProcess?.overallStatus === 'in_progress') return 'in_progress';
-      return 'idle';
+    const getAnalysisState = ():
+      | "idle"
+      | "in_progress"
+      | "completed"
+      | "error" => {
+      if (currentProcess?.overallStatus === "completed") return "completed";
+      if (currentProcess?.overallStatus === "in_progress") return "in_progress";
+      return "idle";
     };
 
     const dynamicMapContent = (
-      <IntegratedMapComponent 
+      <IntegratedMapComponent
         analysisState={getAnalysisState()}
-        collapsed={viewState === 'map-maximized'}
+        collapsed={viewState === "map-maximized"}
       />
     );
 
@@ -468,16 +522,17 @@ export const FullUserFlow: Story = {
         onToggleManagement={() => setManagementVisible(!managementVisible)}
         onNewChat={handleNewChat}
         onSelectChat={(chatId) => {
-          setMessages([{
-            id: "loaded-1",
-            text: `Loaded previous chat: ${realisticChatHistory.find(c => c.id === chatId)?.title}`,
-            type: "system" as const,
-            timestamp: new Date(),
-          }]);
+          setMessages([
+            {
+              id: "loaded-1",
+              text: `Loaded previous chat: ${realisticChatHistory.find((c) => c.id === chatId)?.title}`,
+              type: "system" as const,
+              timestamp: new Date(),
+            },
+          ]);
           setManagementVisible(false);
           setCurrentProcess(null);
         }}
-
         onSubmit={startAnalysis}
       />
     );

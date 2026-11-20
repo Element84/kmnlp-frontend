@@ -83,8 +83,7 @@ describe('User Session Initialization - Hydration Race Condition Fix', () => {
     await store.set(initializeUserSessionAtom);
     
     const sessionState = store.get(userSessionStateAtom);
-    const userId = store.get(userIdAtom);
-    
+
     // Should generate new user ID, not use empty string
     expect(sessionState.currentUserId).toBeTruthy();
     expect(sessionState.currentUserId).toMatch(/^user-\d+-[a-z0-9]+$/);
@@ -94,14 +93,13 @@ describe('User Session Initialization - Hydration Race Condition Fix', () => {
   it('should reject string "null" as invalid user ID', async () => {
     // Simulate string "null" stored (invalid state)
     localStorage.setItem('noaa-nlp-user-id', JSON.stringify('null'));
-    
+
     const store = createStore();
-    
+
     await store.set(initializeUserSessionAtom);
-    
+
     const sessionState = store.get(userSessionStateAtom);
-    const userId = store.get(userIdAtom);
-    
+
     // Should generate new user ID, not use "null" string
     expect(sessionState.currentUserId).toBeTruthy();
     expect(sessionState.currentUserId).toMatch(/^user-\d+-[a-z0-9]+$/);
@@ -111,14 +109,13 @@ describe('User Session Initialization - Hydration Race Condition Fix', () => {
   it('should reject raw string "null" as invalid user ID', async () => {
     // Simulate raw "null" string (another edge case)
     localStorage.setItem('noaa-nlp-user-id', 'null');
-    
+
     const store = createStore();
-    
+
     await store.set(initializeUserSessionAtom);
-    
+
     const sessionState = store.get(userSessionStateAtom);
-    const userId = store.get(userIdAtom);
-    
+
     // Should generate new user ID, not use "null" string
     expect(sessionState.currentUserId).toBeTruthy();
     expect(sessionState.currentUserId).toMatch(/^user-\d+-[a-z0-9]+$/);

@@ -1,5 +1,5 @@
-import React, { useState } from "react";
-import { useSetAtom } from "jotai";
+import { useState, useEffect } from "react";
+import { useAtom } from "jotai";
 import { processDetailsPanelStateAtom } from "../../../store/atoms";
 import { ProcessStep } from "../ProcessStep/ProcessStep";
 import { StatusType } from "../StatusIcon";
@@ -7,7 +7,6 @@ import { ProgressUpdate, Step, DataAnalysisDetails } from "../../../types/api";
 import "./process-indicator.scss";
 import { Button, Icon } from "@trussworks/react-uswds";
 import { ErrorState } from "../ChatContainer/ChatContainer";
-import { NOAAButton } from "../../Button/Button";
 
 export interface ProcessStepData {
   id: string;
@@ -23,14 +22,20 @@ export interface ProcessStepData {
 
 export interface ProcessIndicatorProps {
   steps: ProcessStepData[] | Step[];
-  status: "pending" | "in_progress" | "completed" | "failed";
+  status: "pending" | "in_progress" | "completed" | "failed" | "cancelled";
   title?: string;
   isCollapsed?: boolean;
   onToggle?: (collapsed: boolean) => void;
   showStepNumbers?: boolean;
   animated?: boolean;
   errorState?: ErrorState;
-  onOpenAnalysis?: (analysisDetails: DataAnalysisDetails) => void;
+  // Identifies the owning chat message so step ids (which are only unique
+  // within a single process) don't collide across process indicators.
+  messageId?: string;
+  onOpenAnalysis?: (
+    analysisDetails: DataAnalysisDetails,
+    stepId?: string,
+  ) => void;
 }
 
 export const ProcessIndicator = ({
@@ -42,10 +47,12 @@ export const ProcessIndicator = ({
   showStepNumbers = true,
   animated = true,
   errorState,
-  onOpenAnalysis,
+  messageId,
 }: ProcessIndicatorProps) => {
   const [internalCollapsed, setInternalCollapsed] = useState(isCollapsed);
-  const setProcessDetailsPanelState = useSetAtom(processDetailsPanelStateAtom);
+  const [processDetailsPanelState, setProcessDetailsPanelState] = useAtom(
+    processDetailsPanelStateAtom,
+  );
 
   // Separate normalized steps for rendering (with text/subSteps/outcome)
   // and API steps for details panel (Step[])
@@ -64,8 +71,8 @@ export const ProcessIndicator = ({
         ? step.status === "success"
           ? "completed"
           : step.status === "failure"
-          ? "failed"
-          : "pending"
+            ? "failed"
+            : "cancelled"
         : step.status) as StatusType,
       subSteps:
         (isApiStep
@@ -96,14 +103,16 @@ export const ProcessIndicator = ({
       status: (step.status === "success"
         ? "success"
         : step.status === "failure"
-        ? "failure"
-        : step.status === "completed"
-        ? "success"
-        : step.status === "failed"
-        ? "failure"
-        : step.status === "pending"
-        ? "pending"
-        : "in_progress") as Step["status"],
+          ? "failure"
+          : step.status === "completed"
+            ? "success"
+            : step.status === "failed"
+              ? "failure"
+              : step.status === "cancelled"
+                ? "cancelled"
+                : step.status === "pending"
+                  ? "pending"
+                  : "in_progress") as Step["status"],
       outcome_summary:
         (step as ProcessStepData).outcome || step.outcome_summary || null,
       progress_updates:
@@ -111,6 +120,23 @@ export const ProcessIndicator = ({
       details: step.details || null,
     };
   });
+
+  // Keep the details panel in sync when it's open and showing this process
+  const processTitle =
+    title || `Process (${normalizedStepsForRendering.length} steps)`;
+  useEffect(() => {
+    if (
+      processDetailsPanelState.isOpen &&
+      processDetailsPanelState.messageId === messageId
+    ) {
+      setProcessDetailsPanelState({
+        isOpen: true,
+        stepDetails: apiSteps,
+        processTitle,
+        messageId,
+      });
+    }
+  }, [steps]);
 
   const collapsed = onToggle ? isCollapsed : internalCollapsed;
 
@@ -132,6 +158,8 @@ export const ProcessIndicator = ({
         return "Completed";
       case "failed":
         return "Failed";
+      case "cancelled":
+        return "Cancelled";
       default:
         return "Unknown";
     }
@@ -139,16 +167,16 @@ export const ProcessIndicator = ({
 
   const getProgressPercentage = () => {
     const completedSteps = normalizedStepsForRendering.filter(
-      (step) => step.status === "completed"
+      (step) => step.status === "completed",
     ).length;
     return Math.round(
-      (completedSteps / normalizedStepsForRendering.length) * 100
+      (completedSteps / normalizedStepsForRendering.length) * 100,
     );
   };
 
   return (
     <>
-      <div className="process-indicator bg-white radius-lg shadow-2 margin-y-2 padding-left-105 display-flex flex-column position-relative">
+      <div className="process-indicator bg-white radius-lg shadow-2 padding-left-105 display-flex flex-column position-relative">
         <div className={`process-indicator--${status} status`}></div>
         <div className="width-full radius-right-lg">
           <div
@@ -216,23 +244,26 @@ export const ProcessIndicator = ({
                   </p>
                 </div>
               )}
-              {status !== "in_progress" && (
+              {(status !== "in_progress" ||
+                apiSteps.some((step) => step.details)) && (
                 <div className="border-top-1px border-base-lighter display-flex flex-justify-end margin-top-1 margin-x-neg-2 padding-top-2 padding-right-2">
                   <Button
                     type="button"
                     className="width-auto text-light text-primary-dark font-sans-xs padding-x-105 padding-x-05"
-                    onClick={() => setProcessDetailsPanelState({
-                      isOpen: true,
-                      stepDetails: apiSteps,
-                      processTitle: title || `Process (${normalizedStepsForRendering.length} steps)`,
-                    })}
+                    onClick={() =>
+                      setProcessDetailsPanelState({
+                        isOpen: true,
+                        stepDetails: apiSteps,
+                        processTitle,
+                        messageId,
+                      })
+                    }
                     accentStyle="cool"
                   >
                     Details
                   </Button>
-               
-              </div>
-               )}
+                </div>
+              )}
             </div>
           )}
         </div>

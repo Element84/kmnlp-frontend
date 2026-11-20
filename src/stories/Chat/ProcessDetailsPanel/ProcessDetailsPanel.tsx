@@ -1,4 +1,3 @@
-import React from "react";
 import { Button, Icon } from "@trussworks/react-uswds";
 import { DatasetContent } from "./DatasetContent";
 import { Card } from "../../Card";
@@ -29,7 +28,10 @@ export interface ProcessDetailsPanelProps {
   onClose: () => void;
   stepDetails: Step[];
   processTitle?: string;
-  onOpenAnalysis?: (analysisDetails: DataAnalysisDetails) => void;
+  onOpenAnalysis?: (
+    analysisDetails: DataAnalysisDetails,
+    stepId?: string,
+  ) => void;
 }
 
 export const ProcessDetailsPanel = ({
@@ -55,17 +57,26 @@ export const ProcessDetailsPanel = ({
     return step.details?.content.content_type === "DataAnalysisDetails";
   };
 
-  // Helper to get datasets from a step
-  const getDatasetsFromStep = (step: Step): DatasetInfo[] => {
+  const hasDatasetSearchDetails = (step: Step): boolean => {
+    return step.details?.content.content_type === "DatasetSearchDetails";
+  };
+
+  // Helper to get datasets and search query from a step
+  const getDatasetSearchFromStep = (
+    step: Step,
+  ): { datasets: DatasetInfo[]; query?: string } => {
     if (
       !step.details ||
       step.details.content.content_type !== "DatasetSearchDetails"
     ) {
-      return [];
+      return { datasets: [] };
     }
 
     const searchDetails = step.details.content as DatasetSearchDetails;
-    return searchDetails.results?.map(convertToDatasetInfo) || [];
+    return {
+      datasets: searchDetails.results?.map(convertToDatasetInfo) || [],
+      query: searchDetails.query,
+    };
   };
 
   return (
@@ -82,7 +93,7 @@ export const ProcessDetailsPanel = ({
       >
         {/* Header - Sticky */}
         <div className="display-flex flex-align-center flex-justify padding-2 bg-base-lightest flex-no-shrink height-full details-panel__header">
-          <h2 className="font-sans-lg text-bold text-primary">Details</h2>
+          <h2 className="font-sans-lg text-bold text-primary">Plan Details</h2>
 
           <Button
             type="button"
@@ -98,15 +109,14 @@ export const ProcessDetailsPanel = ({
         {/* Scrollable Content */}
         <div className="display-flex flex-column flex-1 overflow-y-auto">
           <div className="padding-x-3 padding-y-2 border-bottom-1px border-bottom-1px border-base-lighter display-flex flex-column">
-            <span className="text-base-light ">Query Title</span>
-
             <h2 className="margin-0 margin-top-1">{processTitle}</h2>
           </div>
 
           {/* Step Info */}
           {stepDetails.map((detail, index) => {
-            const datasets = getDatasetsFromStep(detail);
-            const hasDatasets = datasets.length > 0;
+            const { datasets, query: searchQuery } =
+              getDatasetSearchFromStep(detail);
+            const hasDatasetSearch = hasDatasetSearchDetails(detail);
             const hasAnalysis = hasDataAnalysisDetails(detail);
 
             return (
@@ -138,20 +148,22 @@ export const ProcessDetailsPanel = ({
                         {detail.status === "success"
                           ? "Complete"
                           : detail.status === "in_progress"
-                          ? "In Progress"
-                          : detail.status === "failure"
-                          ? "Failed"
-                          : detail.status === "pending"
-                          ? "Pending"
-                          : detail.status === "cancelled"
-                          ? "Cancelled"
-                          : "Unknown"}
+                            ? "In Progress"
+                            : detail.status === "failure"
+                              ? "Failed"
+                              : detail.status === "pending"
+                                ? "Pending"
+                                : detail.status === "cancelled"
+                                  ? "Cancelled"
+                                  : "Unknown"}
                       </span>
                     </div>
                   </div>
 
                   {/* Datasets Section */}
-                  {hasDatasets && <DatasetContent datasets={datasets} />}
+                  {hasDatasetSearch && (
+                    <DatasetContent datasets={datasets} query={searchQuery} />
+                  )}
 
                   {/* Data Analysis Card */}
                   {hasAnalysis && (
@@ -164,7 +176,8 @@ export const ProcessDetailsPanel = ({
                           onOpenAnalysis
                         ) {
                           onOpenAnalysis(
-                            detail.details.content as DataAnalysisDetails
+                            detail.details.content as DataAnalysisDetails,
+                            detail.id,
                           );
                         }
                       }}

@@ -5,8 +5,8 @@ import {
   mapViewportAtom,
   areaSelectionStateAtom,
   mapGeoJsonDataAtom,
-  latestGeoJsonDataAtom,
-  cogInfoAtom,
+  geoJsonLayersAtom,
+  cogInfosAtom,
   mapInteractionStateAtom,
   cogStateAtom,
 } from "./atoms";
@@ -14,15 +14,13 @@ import type { ViewState } from "../stories/Chat/ChatView/ChatView";
 import type { MapViewport } from "../stories/Map/MapContainer/types";
 import type { AreaOfInterestType as AreaOfInterest } from "../stories/Map/MapControls/utils/area-of-interest";
 import { DEFAULT_VIEWPORT } from "../stories/Map/MapContainer/types";
-import { getGeoJSONBounds } from "../stories/Map/MapControls/utils/geojson-layer";
-import { calculateViewportFromBounds } from "../stories/Map/MapContainer/viewport-utils";
 
 /**
  * Change view state atom
  */
 export const changeViewStateAtom = atom(
   null,
-  (get, set, newState: ViewState) => {
+  (_get, set, newState: ViewState) => {
     set(viewStateAtom, newState);
   }
 );
@@ -52,7 +50,7 @@ export const toggleManagementAtom = atom(null, (get, set) => {
  */
 export const setManagementVisibleAtom = atom(
   null,
-  (get, set, visible: boolean) => {
+  (_get, set, visible: boolean) => {
     set(managementVisibleAtom, visible);
   }
 );
@@ -64,7 +62,7 @@ export const setManagementVisibleAtom = atom(
  */
 export const updateMapViewportAtom = atom(
   null,
-  (get, set, viewport: MapViewport) => {
+  (_get, set, viewport: MapViewport) => {
     set(mapViewportAtom, viewport);
   }
 );
@@ -97,7 +95,7 @@ export const setAreaSelectionActiveAtom = atom(
 /**
  * Select area atom
  */
-export const selectAreaAtom = atom(null, (get, set, area: AreaOfInterest) => {
+export const selectAreaAtom = atom(null, (_get, set, area: AreaOfInterest) => {
   set(areaSelectionStateAtom, {
     isActive: false,
     selectedArea: area,
@@ -107,7 +105,7 @@ export const selectAreaAtom = atom(null, (get, set, area: AreaOfInterest) => {
 /**
  * Clear selected area atom
  */
-export const clearSelectedAreaAtom = atom(null, (get, set) => {
+export const clearSelectedAreaAtom = atom(null, (_get, set) => {
   set(areaSelectionStateAtom, {
     isActive: false,
     selectedArea: null,
@@ -117,40 +115,28 @@ export const clearSelectedAreaAtom = atom(null, (get, set) => {
 /**
  * Reset map to default viewport atom
  */
-export const resetMapViewportAtom = atom(null, (get, set) => {
+export const resetMapViewportAtom = atom(null, (_get, set) => {
   set(mapViewportAtom, DEFAULT_VIEWPORT);
 });
 
 /**
  * Auto-update map based on new GeoJSON data atom
- * This atom watches for changes in latestGeoJsonData and updates the map accordingly
+ * Watches the set of GeoJSON layers from all messages. When that set changes it
+ * shows the map (if hidden); the actual camera fit is performed in MapContainer
+ * via map.fitBounds, which applies viewport-aware (pixel) padding and therefore
+ * needs the live map instance.
  */
 export const autoUpdateMapForGeoJsonAtom = atom(null, (get, set) => {
-  const latestGeoJsonData = get(latestGeoJsonDataAtom);
-  const currentGeoJsonData = get(mapGeoJsonDataAtom);
+  const geoJsonLayers = get(geoJsonLayersAtom);
+  const currentGeoJsonLayers = get(mapGeoJsonDataAtom);
   const currentViewState = get(viewStateAtom);
 
-  if (latestGeoJsonData !== currentGeoJsonData) {
-    set(mapGeoJsonDataAtom, latestGeoJsonData);
+  if (geoJsonLayers !== currentGeoJsonLayers) {
+    set(mapGeoJsonDataAtom, geoJsonLayers);
 
-    // Automatically show map when GeoJSON AOI data is received
-    if (currentViewState === "map-hidden") {
+    // Automatically show map when GeoJSON AOI data is received.
+    if (geoJsonLayers.length > 0 && currentViewState === "map-hidden") {
       set(viewStateAtom, "expanded");
-    }
-
-    // Calculate bounds and recenter map only when we have new data
-    if (latestGeoJsonData) {
-      const bounds = getGeoJSONBounds(latestGeoJsonData);
-      if (bounds) {
-        // Use consolidated viewport calculation utility
-        const newViewport = calculateViewportFromBounds(bounds, {
-          minZoom: 4,
-          maxZoom: 12,
-          roundZoom: true,
-          preserveOrientation: false, // Reset orientation for new data
-        });
-        set(mapViewportAtom, newViewport);
-      }
     }
   }
 });
@@ -159,10 +145,10 @@ export const autoUpdateMapForGeoJsonAtom = atom(null, (get, set) => {
  * Auto-show map when GeoTIFF data is received atom
  */
 export const autoShowMapForCogAtom = atom(null, (get, set) => {
-  const cogInfo = get(cogInfoAtom);
+  const cogInfos = get(cogInfosAtom);
   const currentViewState = get(viewStateAtom);
 
-  if (cogInfo && currentViewState === "map-hidden") {
+  if (cogInfos.length > 0 && currentViewState === "map-hidden") {
     set(viewStateAtom, "expanded");
   }
 });
@@ -170,7 +156,7 @@ export const autoShowMapForCogAtom = atom(null, (get, set) => {
 /**
  * Reset all map data atom (used when starting new chat or loading different chat)
  */
-export const resetMapDataAtom = atom(null, (get, set) => {
+export const resetMapDataAtom = atom(null, (_get, set) => {
   set(mapGeoJsonDataAtom, null);
   set(areaSelectionStateAtom, {
     isActive: false,

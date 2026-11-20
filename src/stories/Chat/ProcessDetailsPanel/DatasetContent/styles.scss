@@ -1,7 +1,53 @@
+@use "../../../../NOAA-theme.scss" as *;
+
 .button-container {
   max-width: 346px;
 }
 
+.dataset-content__query {
+  padding: 12px;
+  border-left: 3px solid $theme-color-primary;
+  background-color: $theme-color-base-lightest;
+}
+
+.dataset-content__section-heading {
+  color: $theme-color-base-darker;
+  letter-spacing: 0.02em;
+}
+
+.dataset-content__card {
+  border-color: $theme-color-base-light;
+
+  > div:first-child {
+    background-color: $theme-color-white;
+  }
+}
+
+.dataset-content__description {
+  padding-bottom: 12px;
+  border-bottom: 1px solid $theme-color-base-lighter;
+
+  p {
+    white-space: pre-line;
+  }
+}
+
+.dataset-content__metadata-row:last-child {
+  margin-bottom: 0;
+}
+
 .details--title {
   max-width: 150px;
+}
+
+@media (max-width: 30rem) {
+  .dataset-content__metadata-row {
+    display: block;
+  }
+
+  .dataset-content__metadata-row .details--title {
+    display: block;
+    max-width: none;
+    margin-bottom: 2px;
+  }
 }

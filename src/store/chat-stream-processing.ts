@@ -6,14 +6,20 @@ import {
   chatMessagesAtom,
   chatLoadingStateAtom,
   chatErrorStateAtom,
-  cogInfoAtom,
+  cogInfosAtom,
 } from "./atoms";
 import {
   createProcessMessage,
   processGeocodedResponse,
   updateProcessStatusInMessages,
+  appendTextDelta,
+  finalizeStreamingText,
+  appendThinkingDelta,
+  finalizeThinking,
+  applyTerminalState,
 } from "./chat-message-utils";
 
+let nextMapLayerOrder = 0;
 
 
 /**
@@ -31,17 +37,73 @@ export const convertResponseToMessage = (
     : new Date();
 
   switch (response.content.content_type) {
+    case "TextDelta":
+      // Streamed partial text. Accumulate into the current streaming message.
+      // The loading/replay path (isLoading) handles accumulation itself.
+      if (!isLoading) {
+        set(
+          chatMessagesAtom,
+          appendTextDelta(
+            get(chatMessagesAtom),
+            response.content.content_delta,
+            timestamp
+          )
+        );
+      }
+      return null;
+
     case "Text":
-      return {
-        id,
-        text: response.content.text,
-        type: "system",
-        timestamp,
-        rawContent: response.content,
-      };
+      // Final, fully-formed text. This is the authoritative payload: it
+      // overwrites any text accumulated from deltas and ends the stream.
+      if (!isLoading) {
+        set(
+          chatMessagesAtom,
+          finalizeStreamingText(
+            get(chatMessagesAtom),
+            response.content.text,
+            timestamp
+          )
+        );
+      }
+      return null;
+
+    case "ThinkingDelta":
+      // Streamed partial thinking. Accumulated into the current thinking message.
+      if (!isLoading) {
+        set(
+          chatMessagesAtom,
+          appendThinkingDelta(
+            get(chatMessagesAtom),
+            response.content.content_delta,
+            timestamp
+          )
+        );
+      }
+      return null;
+
+    case "Thinking":
+      // Final, fully-formed thinking; overwrites deltas and ends the stream.
+      if (!isLoading) {
+        set(
+          chatMessagesAtom,
+          finalizeThinking(
+            get(chatMessagesAtom),
+            response.content.thinking,
+            response.content.duration,
+            timestamp
+          )
+        );
+      }
+      return null;
 
     case "BackendError":
       console.error("BackendError content received:", response.content);
+      // Terminal response: wind down any in-flight work by marking active
+      // process steps as failed and finalizing any in-progress streamed text.
+      // (The replay/loading path persists final step statuses already.)
+      if (!isLoading) {
+        set(chatMessagesAtom, applyTerminalState(get(chatMessagesAtom), "failed"));
+      }
       set(chatErrorStateAtom, {
         message: response.content.message,
         details: "Backend error occurred",
@@ -49,10 +111,15 @@ export const convertResponseToMessage = (
       return null;
 
     case "GeoTIFF":
-      set(cogInfoAtom, {
-        url: response.content.url,
+      set(cogInfosAtom, [
+        ...get(cogInfosAtom),
+        {
+          id,
+          createdAt: nextMapLayerOrder++,
+          url: response.content.url,
         legend: response.content.legend,
-      });
+        },
+      ]);
       return null;
 
     case "EndOfTurn":
@@ -76,6 +143,20 @@ export const convertResponseToMessage = (
         return null;
       }
 
+    case "ProgressUpdate":
+      // Top-level narration of what the agent is currently doing.
+      set(chatLoadingStateAtom, {
+        ...get(chatLoadingStateAtom),
+        shouldShowLoadingIndicator: false,
+      });
+      return {
+        id,
+        text: response.content.title,
+        type: "progress",
+        timestamp,
+        rawContent: response.content,
+      };
+
     case "Image":
       return {
         id,
@@ -86,8 +167,19 @@ export const convertResponseToMessage = (
         url: response.content.url,
       };
 
+    case "Video":
+      return {
+        id,
+        text: "",
+        type: "system",
+        timestamp,
+        rawContent: response.content,
+        url: response.content.url,
+        mediaKind: "video",
+      };
+
     case "GeocodedAOI":
-      return processGeocodedResponse(response);
+      return processGeocodedResponse(response, nextMapLayerOrder++);
 
     default:
       return null;

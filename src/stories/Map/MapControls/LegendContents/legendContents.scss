@@ -1,3 +1,4 @@
+
 @use "../../../../NOAA-theme.scss" as *;
 
 // Legend Table Styles
@@ -54,7 +55,7 @@
     display: inline-block;
     width: 16px;
     height: 16px;
-    border-radius: $Spacing-Extra-small-gap / 2;
+    border-radius: $Radius-Rounded-Corner;
     flex-shrink: 0;
   }
 
